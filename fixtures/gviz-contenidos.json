@@ -1,0 +1,2 @@
+/*O_o*/
+google.visualization.Query.setResponse({"version":"0.6","status":"ok","table":{"cols":[{"label":"contenido"},{"label":"vistas_abr"},{"label":"usuarios_abr"},{"label":"tiempo_abr"},{"label":"vistas_may"},{"label":"usuarios_may"},{"label":"tiempo_may"}],"rows":[{"c":[{"v":"Adolescencia"},{"v":395},{"v":212},{"v":133},{"v":10},{"v":7},{"v":305}]},{"c":[{"v":"Fentanilo y Propofol"},{"v":0},{"v":0},{"v":0},{"v":102},{"v":25},{"v":310}]},{"c":[{"v":null},{"v":null},{"v":null},{"v":null},{"v":null},{"v":null},{"v":null}]}]}});
