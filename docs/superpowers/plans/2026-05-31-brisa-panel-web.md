@@ -641,6 +641,7 @@ git commit -m "feat: DOM renderer (fields, template rows, line chart points)"
 - `Geografia` — A:`pais`, B:`pct`, C:`etiqueta`.
 - `Eventos` — A:`evento`, B:`volumen`.
 - `Biotienda` — A:`seccion`, B:`visitas`, C:`unicos`.
+- `Inscriptos` — A:`curso_evento`, B:`inscriptos`, C:`fecha`, D:`nota`. (Datos que hoy viven en el Excel de Drive; el equipo los carga acá. Columnas ajustables al ver el archivo real.)
 - `Analisis` — A:`clave`, B:`texto` (tendencia, pico, curiosidad, nota_estrategia).
 
 - [ ] **Step 2: Seed each tab with the current week's real values**
