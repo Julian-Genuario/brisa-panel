@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brisa+ · Panel Analítico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <img src="https://www.brisaplus.com/img/logo.png" alt="Brisa+" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span class="fallback" style="display:none">Brisa<b>+</b></span>
+  </div>
+
+  <div class="nav-label">Reporte</div>
+  <nav class="nav">
+    <a href="#s1" class="active"><span class="dot"></span>Resumen general<span class="src src-ga">GA4</span></a>
+    <a href="#sA"><span class="dot"></span>Análisis y tendencias<span class="src src-man">Mixto</span></a>
+    <a href="#s2"><span class="dot"></span>Evolución<span class="src src-ga">GA4</span></a>
+    <a href="#s4"><span class="dot"></span>Canales<span class="src src-ga">GA4</span></a>
+    <a href="#s6"><span class="dot"></span>Conversión<span class="src src-man">Manual</span></a>
+    <a href="#s5"><span class="dot"></span>Contenidos<span class="src src-ga">GA4</span></a>
+    <a href="#sI"><span class="dot"></span>Inscriptos<span class="src src-man">Manual</span></a>
+    <a href="#s7"><span class="dot"></span>Geografía<span class="src src-ga">GA4</span></a>
+    <a href="#s8"><span class="dot"></span>Eventos<span class="src src-ga">GA4</span></a>
+    <a href="#s9"><span class="dot"></span>Biotienda · Interstaff<span class="src src-ga">GA4</span></a>
+    <a href="#sD"><span class="dot"></span>Definiciones<span class="src src-man">Glosario</span></a>
+  </nav>
+
+  <div class="side-foot">
+    <b>Fuentes conectadas</b><br>
+    Google Analytics 4 · automático<br>
+    Google Sheets · carga manual<br>
+    Backend + pasarelas · verificación<br>
+    <span style="color:var(--muted-2)">Cadencia: semanal (lun–dom)</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <h1 data-field="config.titulo">Panel Analítico — Brisa+</h1>
+      <div class="sub" data-field="config.subtitulo">Reporte semanal · lunes a domingo · se publica el lunes siguiente</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="live"><span class="pulse"></span> <span data-field="config.actualizado">Actualizado</span></div>
+    <div class="ctrl"><span class="ic">⇄</span> vs semana anterior</div>
+    <div class="ctrl primary"><span class="ic">▦</span> <span data-field="config.periodo">Período</span></div>
+  </div>
+
+  <div class="content">
+    <div id="app-status"></div>
+
+    <!-- 1. RESUMEN -->
+    <section class="sec" id="s1">
+      <div class="sec-head"><span class="sec-num">1</span><h2>Resumen general del período</h2><span class="tag tag-ga">Google Analytics</span></div>
+      <div class="grid g4">
+        <div class="card kpi">
+          <div class="klabel">Usuarios activos</div>
+          <div class="kval tnum" data-field="resumen.usuarios_activos">—</div>
+          <div class="ksub" data-field="resumen.usuarios_activos__sub"></div>
+          <div class="accentbar"></div>
+        </div>
+        <div class="card kpi blue">
+          <div class="klabel">Usuarios nuevos</div>
+          <div class="kval tnum" data-field="resumen.usuarios_nuevos">—</div>
+          <div class="ksub" data-field="resumen.usuarios_nuevos__sub"></div>
+          <div class="accentbar"></div>
+        </div>
+        <div class="card kpi">
+          <div class="klabel">Min. por sesión</div>
+          <div class="kval tnum" data-field="resumen.min_sesion">—</div>
+          <div class="ksub" data-field="resumen.min_sesion__sub"></div>
+          <div class="accentbar"></div>
+        </div>
+        <div class="card kpi blue">
+          <div class="klabel">Páginas vistas</div>
+          <div class="kval tnum" data-field="resumen.paginas_vistas">—</div>
+          <div class="ksub" data-field="resumen.paginas_vistas__sub"></div>
+          <div class="accentbar"></div>
+        </div>
+      </div>
+      <div class="note"><span class="ni">i</span><div data-field="resumen.nota"><b>Cómo leerlo:</b> resumen del período según GA4.</div></div>
+    </section>
+
+    <!-- ANALISIS Y TENDENCIAS -->
+    <section class="sec" id="sA">
+      <div class="sec-head"><span class="sec-num">★</span><h2>Análisis y tendencias de la semana</h2><span class="tag tag-man">GA4 + análisis manual</span></div>
+      <div class="grid g3">
+        <div class="card">
+          <div class="klabel" style="font-size:11px;font-weight:700;color:var(--blue-2);text-transform:uppercase;letter-spacing:.05em">Tendencia vs semana anterior</div>
+          <div style="font-size:30px;font-weight:800;letter-spacing:-1px;margin:10px 0 4px;color:var(--green)" data-field="analisis.tendencia_valor">—</div>
+          <div style="font-size:12.5px;color:var(--muted)" data-field="analisis.tendencia_texto"></div>
+        </div>
+        <div class="card">
+          <div class="klabel" style="font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.05em">Pico de la semana</div>
+          <div style="font-size:30px;font-weight:800;letter-spacing:-1px;margin:10px 0 4px" data-field="analisis.pico_valor">—</div>
+          <div style="font-size:12.5px;color:var(--muted)" data-field="analisis.pico_texto"></div>
+        </div>
+        <div class="card">
+          <div class="klabel" style="font-size:11px;font-weight:700;color:#c4521f;text-transform:uppercase;letter-spacing:.05em">Curiosidad a revisar</div>
+          <div style="font-size:30px;font-weight:800;letter-spacing:-1px;margin:10px 0 4px" data-field="analisis.curiosidad_valor">—</div>
+          <div style="font-size:12.5px;color:var(--muted)" data-field="analisis.curiosidad_texto"></div>
+        </div>
+      </div>
+      <div class="note blue"><span class="ni">★</span><div data-field="analisis.estrategia"><b>Estrategia de contenidos:</b> la agenda la marca la actualidad de salud que es tendencia. (Pendiente: cargar el brief de criterios de contenido exitoso.)</div></div>
+    </section>
+
+    <!-- 4. CANALES -->
+    <section class="sec" id="s4">
+      <div class="sec-head"><span class="sec-num">4</span><h2>Canales de adquisición</h2><span class="tag tag-ga">Google Analytics</span></div>
+      <div class="card">
+        <div class="chart-cap" style="margin-bottom:16px">Usuarios nuevos por canal</div>
+        <div class="bars" data-rows="canales">
+          <template>
+            <div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--blue),var(--blue-2))"></i></div><span class="bv tnum" data-cell="value"></span></div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. CONTENIDOS -->
+    <section class="sec" id="s5">
+      <div class="sec-head"><span class="sec-num">5</span><h2>Contenidos — comparativa por período</h2><span class="tag tag-ga">Google Analytics</span></div>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Contenido</th>
+              <th class="r">Vistas A</th>
+              <th class="r">Vistas B</th>
+              <th class="r">Δ</th>
+              <th class="r">Total</th>
+              <th class="r">Usuarios A</th>
+              <th class="r">Usuarios B</th>
+              <th class="r">Δ</th>
+              <th class="r">Tiempo A</th>
+              <th class="r">Tiempo B</th>
+              <th class="r">Δ</th>
+            </tr>
+          </thead>
+          <tbody data-rows="contenidos">
+            <template>
+              <tr>
+                <td class="pgname" data-cell="name"></td>
+                <td class="r tnum" data-cell="va"></td>
+                <td class="r tnum" data-cell="vm"></td>
+                <td class="r delta" data-cell="delta_v"></td>
+                <td class="r tnum total-cell" data-cell="total_v"></td>
+                <td class="r tnum" data-cell="ua"></td>
+                <td class="r tnum" data-cell="um"></td>
+                <td class="r delta" data-cell="delta_u"></td>
+                <td class="r tnum" data-cell="ta"></td>
+                <td class="r tnum" data-cell="tm"></td>
+                <td class="r delta" data-cell="delta_t"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <div class="note blue"><span class="ni">i</span><div>Orden por suma de vistas (período A + B). La flecha Δ aparece solo cuando ambos períodos tienen tráfico.</div></div>
+      </div>
+    </section>
+
+    <!-- INSCRIPTOS -->
+    <section class="sec" id="sI">
+      <div class="sec-head"><span class="sec-num">✦</span><h2>Inscriptos por curso / evento</h2><span class="tag tag-man">Carga manual (Sheet)</span></div>
+      <div class="card">
+        <div class="chart-cap" style="margin-bottom:16px">Inscriptos cargados desde la planilla de Drive</div>
+        <table>
+          <thead><tr><th>Curso / Evento</th><th class="r">Inscriptos</th><th>Fecha</th><th>Nota</th></tr></thead>
+          <tbody data-rows="inscriptos">
+            <template>
+              <tr>
+                <td class="pgname" data-cell="curso_evento"></td>
+                <td class="r tnum" data-cell="inscriptos"></td>
+                <td data-cell="fecha"></td>
+                <td data-cell="nota"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. GEOGRAFIA -->
+    <section class="sec" id="s7">
+      <div class="sec-head"><span class="sec-num">7</span><h2>Distribución geográfica</h2><span class="tag tag-ga">Google Analytics</span></div>
+      <div class="card">
+        <div class="chart-cap" style="margin-bottom:16px">Usuarios por país · participación del período</div>
+        <div class="bars" data-rows="geografia">
+          <template>
+            <div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--orange),#ffab84)"></i></div><span class="bv tnum" data-cell="value"></span></div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. EVENTOS -->
+    <section class="sec" id="s8">
+      <div class="sec-head"><span class="sec-num">8</span><h2>Eventos principales</h2><span class="tag tag-ga">Google Analytics</span></div>
+      <div class="card">
+        <div class="bars" data-rows="eventos">
+          <template>
+            <div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--blue),var(--blue-2))"></i></div><span class="bv tnum" data-cell="value"></span></div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. BIOTIENDA / INTERSTAFF -->
+    <section class="sec" id="s9">
+      <div class="sec-head"><span class="sec-num">9</span><h2>Clics en Biotienda e Interstaff</h2><span class="tag tag-man" style="background:#fff4f0;color:#c4521f">Prioridad</span></div>
+      <div class="grid g2" data-rows="biotienda">
+        <template>
+          <div class="card">
+            <div class="chart-title" data-cell="seccion"></div>
+            <div class="mini-grid" style="margin-top:18px">
+              <div><div class="mnum tnum" data-cell="visitas"></div><div class="mt">Visitas</div></div>
+              <div><div class="mnum tnum" data-cell="unicos"></div><div class="mt">Usuarios únicos</div></div>
+              <div><div class="mnum tnum" data-cell="ratio"></div><div class="mt">Visitas/usuario</div></div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- DEFINICIONES -->
+    <section class="sec" id="sD">
+      <div class="sec-head"><span class="sec-num">?</span><h2>Definiciones y metodología</h2><span class="tag tag-man">Glosario</span></div>
+      <div class="card">
+        <div class="chart-title" style="margin-bottom:14px">Cómo se arma el reporte</div>
+        <table>
+          <tbody>
+            <tr><td class="pgname" style="width:42%">Período</td><td>Semanal, de <b>lunes a domingo</b>. Se publica el lunes siguiente al cierre.</td></tr>
+            <tr><td class="pgname">Fuente automática</td><td>Google Analytics 4 (tráfico, usuarios, canales, contenidos, eventos, geografía).</td></tr>
+            <tr><td class="pgname">Fuente manual</td><td>Google Sheets con backend (registros/pagos) e inscriptos.</td></tr>
+            <tr><td class="pgname">Verificación</td><td>Registros/pagos se cruzan con backend + pasarelas antes de publicar.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer class="disc">
+  <b style="color:var(--ink)">Brisa+ · Panel Analítico</b> — Se conecta en vivo a una Google Sheet publicada (carga del equipo) y a Google Analytics 4. Reporte semanal (lun–dom). Estética derivada de brisaplus.com.
+</footer>
+
+<script type="module" src="js/app.js"></script>
+<script>
+// animate bars & ring on load (runs after app.js sets values + data-w / data-pct)
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.querySelectorAll('.fill').forEach(f=>{f.style.width=(f.dataset.w||0)+'%'});
+    document.querySelectorAll('.ring').forEach(r=>{
+      const c=358.1, pct=parseFloat(r.dataset.pct||0)/100;
+      r.style.transition='stroke-dashoffset 1.4s cubic-bezier(.2,.7,.2,1)';
+      r.style.strokeDashoffset=c*(1-pct);
+    });
+  },250);
+});
+// active nav on scroll
+const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
+const map={s1:0,sA:1,s4:3,s5:5,sI:6,s7:7,s8:8,s9:9,sD:10};
+secs.forEach(s=>{
+  new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
+});
+</script>
+</body>
+</html>
