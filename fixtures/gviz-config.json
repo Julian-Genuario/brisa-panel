@@ -1,0 +1,2 @@
+/*O_o*/
+google.visualization.Query.setResponse({"version":"0.6","reqId":"0","status":"ok","sig":"123","table":{"cols":[{"id":"A","label":"clave","type":"string"},{"id":"B","label":"valor","type":"string"}],"rows":[{"c":[{"v":"periodo"},{"v":"2 – 8 mar 2026"}]},{"c":[{"v":"titulo"},{"v":"Panel Analítico — Brisa+"}]}]}});
