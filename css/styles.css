@@ -182,5 +182,10 @@ footer.disc{margin-left:var(--sidebar);padding:22px 34px 40px;color:var(--muted-
 .content .sec:nth-child(5){animation-delay:.34s}
 .content .sec:nth-child(n+6){animation-delay:.4s}
 
+.modo-btn{background:none;border:none;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:4px 8px;border-radius:8px;cursor:pointer}
+.modo-btn.active{background:var(--orange-soft);color:#c4521f}
+.ctrl.primary select{background:transparent;border:none;font:inherit;font-weight:700;color:#fff;cursor:pointer}
+.ctrl.primary select option{color:#1a1d21}
+
 @media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}}
 @media(max-width:780px){:root{--sidebar:0px}.sidebar{display:none}.main,footer.disc{margin-left:0}}
