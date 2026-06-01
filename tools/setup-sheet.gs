@@ -125,7 +125,9 @@ function setupPanel() {
     if (!sheet) sheet = ss.insertSheet(name);
     sheet.clear();
     var data = tabs[name];
-    sheet.getRange(1, 1, data.length, data[0].length).setValues(data);
+    var rng = sheet.getRange(1, 1, data.length, data[0].length);
+    rng.setNumberFormat('@'); // texto plano: gviz devuelve exactamente lo escrito (evita que "1:59" se lea como hora)
+    rng.setValues(data);
     sheet.getRange(1, 1, 1, data[0].length).setFontWeight('bold');
     sheet.setFrozenRows(1);
   });
