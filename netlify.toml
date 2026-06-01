@@ -6,3 +6,7 @@
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=300"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

@@ -5,5 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test"
+  },
+  "dependencies": {
+    "@google-analytics/data": "^6.1.0"
   }
 }
