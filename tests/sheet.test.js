@@ -15,6 +15,7 @@ test('gvizUrl: builds the published-sheet JSON endpoint', () => {
   assert.ok(url.startsWith('https://docs.google.com/spreadsheets/d/SHEET123/gviz/tq?'));
   assert.ok(url.includes('tqx=out%3Ajson'));
   assert.ok(url.includes('sheet=Config'));
+  assert.ok(url.includes('headers=1'));
 });
 
 test('parseGviz: strips the JS wrapper and returns cols + rows', () => {

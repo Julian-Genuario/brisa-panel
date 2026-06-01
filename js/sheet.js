@@ -2,7 +2,7 @@
 
 export function gvizUrl(sheetId, tabName) {
   const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq`;
-  const params = new URLSearchParams({ tqx: 'out:json', sheet: tabName });
+  const params = new URLSearchParams({ tqx: 'out:json', sheet: tabName, headers: '1' });
   return `${base}?${params.toString()}`;
 }
 

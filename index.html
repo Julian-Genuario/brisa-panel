@@ -115,6 +115,31 @@
       <div class="note blue"><span class="ni">★</span><div data-field="analisis.estrategia"><b>Estrategia de contenidos:</b> la agenda la marca la actualidad de salud que es tendencia. (Pendiente: cargar el brief de criterios de contenido exitoso.)</div></div>
     </section>
 
+    <!-- 2. EVOLUCION -->
+    <section class="sec" id="s2">
+      <div class="sec-head"><span class="sec-num">2</span><h2>Evolución mensual</h2><span class="tag tag-ga">Google Analytics</span></div>
+      <div class="card">
+        <div class="chart-cap" style="margin-bottom:16px">Desde enero · visitas a Home y nuevos vs recurrentes con sus porcentajes, mes a mes</div>
+        <table>
+          <thead><tr><th>Mes</th><th class="r">Visitas Home</th><th class="r">Activos</th><th class="r">Nuevos</th><th class="r">% Nuevos</th><th class="r">Recurrentes</th><th class="r">% Recurr.</th></tr></thead>
+          <tbody data-rows="evolucion">
+            <template>
+              <tr>
+                <td class="pgname" data-cell="mes"></td>
+                <td class="r tnum" data-cell="home"></td>
+                <td class="r tnum" data-cell="activos"></td>
+                <td class="r tnum" data-cell="nuevos"></td>
+                <td class="r tnum" data-cell="pct_nuevos"></td>
+                <td class="r tnum" data-cell="recurrentes"></td>
+                <td class="r tnum" data-cell="pct_recurrentes"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <div class="note blue"><span class="ni">i</span><div>Tabla acumulativa: cada mes se agrega como fila para seguir la evolución de nuevos vs recurrentes a lo largo del tiempo (desde enero).</div></div>
+      </div>
+    </section>
+
     <!-- 4. CANALES -->
     <section class="sec" id="s4">
       <div class="sec-head"><span class="sec-num">4</span><h2>Canales de adquisición</h2><span class="tag tag-ga">Google Analytics</span></div>
@@ -126,6 +151,24 @@
           </template>
         </div>
       </div>
+    </section>
+
+    <!-- 6. CONVERSION -->
+    <section class="sec" id="s6">
+      <div class="sec-head"><span class="sec-num">6</span><h2>Conversiones (medidas en el tiempo)</h2><span class="tag tag-man">GA4 + backend</span></div>
+      <div class="grid g2" style="grid-template-columns:1fr 1fr">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><span class="chip">GA4</span><div class="chart-title" style="margin:0">Conversión 1 · Nuevos en Home → Registro</div></div>
+          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--blue-2)" data-field="conversion.conv1_valor">—</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:6px" data-field="conversion.conv1_texto">% de usuarios nuevos que completan el formulario de registro. Mide si la Home convierte.</div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><span class="chip" style="background:var(--orange-soft);color:#c4521f">Backend</span><div class="chart-title" style="margin:0">Conversión 2 · Registro → Pago</div></div>
+          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--orange)" data-field="conversion.conv2_valor">—</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:6px" data-field="conversion.conv2_texto">% de registrados que se vuelven suscriptores pagos. Sale del backend — GA no lo ve.</div>
+        </div>
+      </div>
+      <div class="note" style="background:#fff4f0;border-color:#e05a2b;color:#8a3413"><span class="ni" style="color:#e05a2b">⚠</span><div><b>Verificación obligatoria:</b> registros y pagos se cruzan siempre contra el backend y las pasarelas antes de publicar (fuente de verdad). No hay funnel registro→login→pago por usuario porque GA4 no identifica personas; por eso son dos conversiones independientes.</div></div>
     </section>
 
     <!-- 5. CONTENIDOS -->
@@ -236,16 +279,32 @@
     <!-- DEFINICIONES -->
     <section class="sec" id="sD">
       <div class="sec-head"><span class="sec-num">?</span><h2>Definiciones y metodología</h2><span class="tag tag-man">Glosario</span></div>
-      <div class="card">
-        <div class="chart-title" style="margin-bottom:14px">Cómo se arma el reporte</div>
-        <table>
-          <tbody>
-            <tr><td class="pgname" style="width:42%">Período</td><td>Semanal, de <b>lunes a domingo</b>. Se publica el lunes siguiente al cierre.</td></tr>
-            <tr><td class="pgname">Fuente automática</td><td>Google Analytics 4 (tráfico, usuarios, canales, contenidos, eventos, geografía).</td></tr>
-            <tr><td class="pgname">Fuente manual</td><td>Google Sheets con backend (registros/pagos) e inscriptos.</td></tr>
-            <tr><td class="pgname">Verificación</td><td>Registros/pagos se cruzan con backend + pasarelas antes de publicar.</td></tr>
-          </tbody>
-        </table>
+      <div class="grid g2" style="grid-template-columns:1fr 1fr">
+        <div class="card">
+          <div class="chart-title" style="margin-bottom:14px">Términos del tablero</div>
+          <table>
+            <tbody>
+              <tr><td class="pgname" style="width:40%">Conversión 1</td><td>Nuevos en Home → registro. % de usuarios nuevos que completan el formulario. Sale de GA.</td></tr>
+              <tr><td class="pgname">Conversión 2</td><td>Registro → pago. % de registrados que pagan la suscripción. Sale del <b>backend</b> (GA no lo ve).</td></tr>
+              <tr><td class="pgname">Inscripción al Evento</td><td><span style="color:#c4521f;font-weight:600">[definir con el equipo: ¿qué evento? ¿landing/formulario?]</span></td></tr>
+              <tr><td class="pgname">Webinar Brisa+</td><td><span style="color:#c4521f;font-weight:600">[definir: ¿qué webinar / sección?]</span></td></tr>
+              <tr><td class="pgname">Maniobra de Heimlich (×3)</td><td><span style="color:#c4521f;font-weight:600">[aclarar las 3 entradas: tipo de contenido de cada una]</span></td></tr>
+              <tr><td class="pgname">Calendario de Huertas</td><td>Fechas tipo "1 ENERO", "14 y 15". <span style="color:#c4521f;font-weight:600">[confirmar y reetiquetar]</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="chart-title" style="margin-bottom:14px">Cómo se arma el reporte</div>
+          <table>
+            <tbody>
+              <tr><td class="pgname" style="width:40%">Período</td><td>Semanal, de <b>lunes a domingo</b>. Se publica el lunes siguiente al cierre.</td></tr>
+              <tr><td class="pgname">Contenidos</td><td>Lista <b>todo el contenido editorial</b> (no páginas de sistema como login/home/perfil), con todas sus interacciones — no solo los tops.</td></tr>
+              <tr><td class="pgname">Fuente automática</td><td>Google Analytics 4 (tráfico, usuarios, canales, contenidos, eventos, geografía).</td></tr>
+              <tr><td class="pgname">Fuente manual</td><td>Google Sheets con backend (registros/pagos) e inscriptos.</td></tr>
+              <tr><td class="pgname">Verificación</td><td>Registros/pagos se cruzan con backend + pasarelas antes de publicar.</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -271,7 +330,7 @@ window.addEventListener('load',()=>{
 });
 // active nav on scroll
 const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
-const map={s1:0,sA:1,s4:3,s5:5,sI:6,s7:7,s8:8,s9:9,sD:10};
+const map={s1:0,sA:1,s2:2,s4:3,s6:4,s5:5,sI:6,s7:7,s8:8,s9:9,sD:10};
 secs.forEach(s=>{
   new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
 });
