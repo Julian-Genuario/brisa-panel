@@ -13,12 +13,12 @@ export function renderFields(root, data) {
 
 // Fill a [data-rows="<key>"] container by cloning its <template> per item.
 // cellFns maps a data-cell name to (item) => HTML string.
-export function renderRows(root, key, items, cellFns) {
+export function renderRows(root, key, items, cellFns, tplSelector) {
   const body = root.querySelector(`[data-rows="${key}"]`);
   if (!body) return;
-  const tpl = body.querySelector('template');
+  const tpl = tplSelector ? body.querySelector(tplSelector) : body.querySelector('template');
   if (!tpl) return;
-  // Remove previously rendered nodes (anything that is not the template).
+  // Remove previously rendered nodes (anything that is not a template).
   [...body.children].forEach(c => { if (c.tagName !== 'TEMPLATE') c.remove(); });
   for (const item of items) {
     const node = tpl.content.firstElementChild.cloneNode(true);
@@ -52,6 +52,27 @@ export function contenidosCells() {
     tm: i => fmtTime(i.tm),
     delta_t: i => dcell(i.ta, i.tm),
   };
+}
+
+// Contenidos en modo simple: name | vistas | usuarios | tiempo
+export function contenidosCellsSimple() {
+  return {
+    name: i => i.name,
+    vistas: i => fmtNum(i.vistas),
+    usuarios: i => fmtNum(i.usuarios),
+    tiempo: i => fmtTime(i.tiempo),
+  };
+}
+
+// Contenidos en modo comparar: une A y B por nombre -> {name, va,ua,ta, vm,um,tm}
+export function joinContenidos(a, b) {
+  const map = new Map();
+  for (const c of a) map.set(c.name, { name: c.name, va: c.vistas, ua: c.usuarios, ta: c.tiempo, vm: 0, um: 0, tm: 0 });
+  for (const c of b) {
+    const e = map.get(c.name) || { name: c.name, va: 0, ua: 0, ta: 0, vm: 0, um: 0, tm: 0 };
+    e.vm = c.vistas; e.um = c.usuarios; e.tm = c.tiempo; map.set(c.name, e);
+  }
+  return [...map.values()].sort((x, y) => (y.va + y.vm) - (x.va + x.vm));
 }
 
 // Build an SVG polyline points string for the evolución line chart.

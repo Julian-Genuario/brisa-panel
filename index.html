@@ -180,29 +180,29 @@
       <div class="sec-head"><span class="sec-num">5</span><h2>Contenidos — comparativa por período</h2><span class="tag tag-ga">Google Analytics</span></div>
       <div class="card">
         <table>
-          <thead>
-            <tr>
-              <th>Contenido</th>
-              <th class="r">Vistas A</th>
-              <th class="r">Vistas B</th>
-              <th class="r">Δ</th>
-              <th class="r">Total</th>
-              <th class="r">Usuarios A</th>
-              <th class="r">Usuarios B</th>
-              <th class="r">Δ</th>
-              <th class="r">Tiempo A</th>
-              <th class="r">Tiempo B</th>
-              <th class="r">Δ</th>
-            </tr>
+          <thead data-head="contenidos-simple">
+            <tr><th>Contenido</th><th class="r">Vistas</th><th class="r">Usuarios</th><th class="r">Tiempo</th></tr>
+          </thead>
+          <thead data-head="contenidos-compare" hidden>
+            <tr><th>Contenido</th><th class="r">Vistas A</th><th class="r">Vistas B</th><th class="r">Δ</th>
+                <th class="r">Usuarios A</th><th class="r">Usuarios B</th><th class="r">Δ</th>
+                <th class="r">Tiempo A</th><th class="r">Tiempo B</th><th class="r">Δ</th></tr>
           </thead>
           <tbody data-rows="contenidos">
-            <template>
+            <template class="tpl-simple">
+              <tr>
+                <td class="pgname" data-cell="name"></td>
+                <td class="r tnum" data-cell="vistas"></td>
+                <td class="r tnum" data-cell="usuarios"></td>
+                <td class="r tnum" data-cell="tiempo"></td>
+              </tr>
+            </template>
+            <template class="tpl-compare">
               <tr>
                 <td class="pgname" data-cell="name"></td>
                 <td class="r tnum" data-cell="va"></td>
                 <td class="r tnum" data-cell="vm"></td>
                 <td class="r delta" data-cell="delta_v"></td>
-                <td class="r tnum total-cell" data-cell="total_v"></td>
                 <td class="r tnum" data-cell="ua"></td>
                 <td class="r tnum" data-cell="um"></td>
                 <td class="r delta" data-cell="delta_u"></td>
@@ -213,7 +213,7 @@
             </template>
           </tbody>
         </table>
-        <div class="note blue"><span class="ni">i</span><div>Orden por suma de vistas (período A + B). La flecha Δ aparece solo cuando ambos períodos tienen tráfico.</div></div>
+        <div class="note blue"><span class="ni">i</span><div>Todo el contenido editorial (sin páginas de sistema), ordenado por vistas. En modo Comparar se muestran los dos períodos y su Δ (la flecha aparece solo cuando ambos tienen tráfico).</div></div>
       </div>
     </section>
 

@@ -1,130 +1,105 @@
-// js/app.js — fetch each Sheet tab, build the data object, render, then animate.
+// js/app.js — GA en vivo por período + fuentes manuales de la Sheet.
 import { gvizUrl, parseGviz } from './sheet.js';
-import { buildConfig, buildContenidos, mapColumns } from './sections.js';
-import { renderFields, renderRows, contenidosCells } from './render.js';
+import { buildConfig, mapColumns } from './sections.js';
+import { renderFields, renderRows, contenidosCells, contenidosCellsSimple, joinContenidos } from './render.js';
+import { fetchPeriodo, fetchEvolucion } from './gaclient.js';
+import { initSelector } from './selector.js';
 
 const SHEET_ID = '1FPsE8AaefOM8Jayz60-YbvhX4q3TrSkHdrA9FfspClY';
+const esNum = n => Number(n).toLocaleString('es-AR');
 
 async function fetchTab(tab) {
   const res = await fetch(gvizUrl(SHEET_ID, tab));
   if (!res.ok) throw new Error(`HTTP ${res.status} en ${tab}`);
   return parseGviz(await res.text());
 }
+const status = msg => { const el = document.getElementById('app-status'); if (el) el.textContent = msg; };
 
-function status(msg) {
-  const el = document.getElementById('app-status');
-  if (el) el.textContent = msg;
+function bars(key, items) {
+  const max = Math.max(1, ...items.map(i => i.value));
+  renderRows(document, key, items, { label: i => i.label, value: i => (i.value ? esNum(i.value) : '—') });
+  const body = document.querySelector(`[data-rows="${key}"]`);
+  if (body) body.querySelectorAll('.fill').forEach((el, i) => { if (items[i]) el.dataset.w = String((items[i].value / max) * 100); });
 }
 
-const pct = (a, b) => (b > 0 ? `${Math.round((a / b) * 100)}%` : '—');
-const esNum = n => Number(n).toLocaleString('es-AR');
-
-async function main() {
-  status('Cargando datos…');
+async function renderGA(sel) {
+  status('Cargando GA…');
   try {
-    const tabs = ['Config', 'Resumen', 'Analisis', 'Conversion', 'Evolucion',
-                  'Canales', 'Contenidos', 'Inscriptos', 'Geografia', 'Eventos', 'Biotienda'];
-    const r = {};
-    const results = await Promise.all(tabs.map(fetchTab));
-    tabs.forEach((t, i) => { r[t] = results[i]; });
+    const a = await fetchPeriodo(sel.a.desde, sel.a.hasta);
+    const compare = sel.modo === 'comparar' && sel.b;
+    const b = compare ? await fetchPeriodo(sel.b.desde, sel.b.hasta) : null;
 
-    // key/value tabs -> objects
-    const config = buildConfig(r.Config.rows);
-    const analisis = buildConfig(r.Analisis.rows);
-    const conversion = buildConfig(r.Conversion.rows);
+    renderFields(document, { resumen: a.resumen, config: { periodo: compare ? `${sel.a.label} vs ${sel.b.label}` : sel.a.label } });
 
-    // Resumen: metrica/valor/sub -> resumen.<metrica> and resumen.<metrica>__sub
-    const resumen = {};
-    for (const row of mapColumns(r.Resumen.rows, [
-      { key: 'm', idx: 0, type: 'str' },
-      { key: 'v', idx: 1, type: 'str' },
-      { key: 's', idx: 2, type: 'str' },
-    ])) {
-      resumen[row.m] = row.v;
-      resumen[`${row.m}__sub`] = row.s;
+    const headSimple = document.querySelector('[data-head="contenidos-simple"]');
+    const headCompare = document.querySelector('[data-head="contenidos-compare"]');
+    if (compare) {
+      headSimple.hidden = true; headCompare.hidden = false;
+      renderRows(document, 'contenidos', joinContenidos(a.contenidos, b.contenidos), contenidosCells(), '.tpl-compare');
+    } else {
+      headSimple.hidden = false; headCompare.hidden = true;
+      renderRows(document, 'contenidos', a.contenidos, contenidosCellsSimple(), '.tpl-simple');
     }
 
-    renderFields(document, { config, analisis, conversion, resumen });
-
-    // Contenidos (editorial only, all of it, sorted by views)
-    renderRows(document, 'contenidos', buildContenidos(r.Contenidos.rows), contenidosCells());
-
-    // Evolución mensual (compute % nuevos / recurrentes)
-    const evo = mapColumns(r.Evolucion.rows, [
-      { key: 'mes', idx: 0, type: 'str' },
-      { key: 'home', idx: 1, type: 'num' },
-      { key: 'activos', idx: 2, type: 'num' },
-      { key: 'nuevos', idx: 3, type: 'num' },
-      { key: 'recurrentes', idx: 4, type: 'num' },
-    ]);
-    renderRows(document, 'evolucion', evo, {
-      mes: i => i.mes,
-      home: i => esNum(i.home),
-      activos: i => esNum(i.activos),
-      nuevos: i => esNum(i.nuevos),
-      pct_nuevos: i => pct(i.nuevos, i.activos),
-      recurrentes: i => esNum(i.recurrentes),
-      pct_recurrentes: i => pct(i.recurrentes, i.activos),
-    });
-
-    // Inscriptos
-    const ins = mapColumns(r.Inscriptos.rows, [
-      { key: 'curso_evento', idx: 0, type: 'str' },
-      { key: 'inscriptos', idx: 1, type: 'num' },
-      { key: 'fecha', idx: 2, type: 'str' },
-      { key: 'nota', idx: 3, type: 'str' },
-    ]);
-    renderRows(document, 'inscriptos', ins, {
-      curso_evento: i => i.curso_evento,
-      inscriptos: i => esNum(i.inscriptos),
-      fecha: i => i.fecha,
-      nota: i => i.nota,
-    });
-
-    // Biotienda (compute visitas/usuario)
-    const bio = mapColumns(r.Biotienda.rows, [
-      { key: 'seccion', idx: 0, type: 'str' },
-      { key: 'visitas', idx: 1, type: 'num' },
-      { key: 'unicos', idx: 2, type: 'num' },
-    ]);
-    renderRows(document, 'biotienda', bio, {
-      seccion: i => i.seccion,
-      visitas: i => esNum(i.visitas),
-      unicos: i => esNum(i.unicos),
-      ratio: i => (i.unicos > 0 ? (i.visitas / i.unicos).toFixed(2).replace('.', ',') : '—'),
-    });
-
-    // Bar blocks (canales, geografia, eventos): [label, value]
-    bars('canales', r.Canales.rows);
-    bars('geografia', r.Geografia.rows);
-    bars('eventos', r.Eventos.rows);
-
+    bars('canales', a.canales);
+    bars('geografia', a.geografia);
+    bars('eventos', a.eventos);
     status('');
   } catch (err) {
-    status('No se pudieron cargar los datos. Verificá que la Sheet esté publicada y reintentá en unos minutos.');
+    status('Sin datos de GA para este período. Probá otra fecha o reintentá.');
     console.error(err);
   } finally {
-    // (Re)trigger the animation now that values / data-w are set.
     window.dispatchEvent(new Event('load'));
   }
 }
 
-// Generic bar block: rows of [label, value] -> fill widths + value labels.
-function bars(key, rows) {
+function inscriptosEnPeriodo(rows, desde, hasta) {
   const items = mapColumns(rows, [
-    { key: 'label', idx: 0, type: 'str' },
-    { key: 'value', idx: 1, type: 'num' },
+    { key: 'curso_evento', idx: 0, type: 'str' }, { key: 'inscriptos', idx: 1, type: 'num' },
+    { key: 'fecha', idx: 2, type: 'str' }, { key: 'nota', idx: 3, type: 'str' },
   ]);
-  const max = Math.max(1, ...items.map(i => i.value));
-  renderRows(document, key, items, {
-    label: i => i.label,
-    value: i => (i.value ? esNum(i.value) : '—'),
-  });
-  const body = document.querySelector(`[data-rows="${key}"]`);
-  if (!body) return;
-  body.querySelectorAll('.fill').forEach((el, i) => {
-    if (items[i]) el.dataset.w = String((items[i].value / max) * 100);
-  });
+  return items.filter(i => !i.fecha || (i.fecha >= desde.slice(0, 7) && i.fecha <= hasta));
+}
+
+async function loadEvolucion() {
+  try {
+    const evo = await fetchEvolucion(new Date().toISOString().slice(0, 10));
+    renderRows(document, 'evolucion', evo.evolucion, {
+      mes: i => i.mes, home: i => esNum(i.paginas), activos: i => esNum(i.activos), nuevos: i => esNum(i.nuevos),
+      pct_nuevos: i => (i.activos ? `${Math.round(i.nuevos / i.activos * 100)}%` : '—'),
+      recurrentes: i => esNum(i.recurrentes),
+      pct_recurrentes: i => (i.activos ? `${Math.round(i.recurrentes / i.activos * 100)}%` : '—'),
+    });
+  } catch (err) {
+    console.error('evolución no disponible', err);
+  }
+}
+
+async function main() {
+  status('Cargando…');
+  try {
+    const [config, analisis, conversion, inscriptos] = await Promise.all(
+      ['Config', 'Analisis', 'Conversion', 'Inscriptos'].map(fetchTab)
+    );
+    renderFields(document, {
+      config: buildConfig(config.rows), analisis: buildConfig(analisis.rows), conversion: buildConfig(conversion.rows),
+    });
+    window.__inscriptosRows = inscriptos.rows;
+
+    loadEvolucion(); // independiente del período; no bloquea
+
+    initSelector(document, sel => {
+      if (sel.a) renderGA(sel);
+      const ins = inscriptosEnPeriodo(window.__inscriptosRows, sel.a.desde, sel.a.hasta);
+      renderRows(document, 'inscriptos', ins, {
+        curso_evento: i => i.curso_evento, inscriptos: i => esNum(i.inscriptos), fecha: i => i.fecha, nota: i => i.nota,
+      });
+    });
+    status('');
+  } catch (err) {
+    status('No se pudieron cargar los datos. Reintentá en unos minutos.');
+    console.error(err);
+  }
 }
 
 main();
