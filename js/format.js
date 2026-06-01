@@ -31,3 +31,10 @@ export function delta(a, b) {
 export function sortByViews(rows) {
   return [...rows].sort((x, y) => (y.va + y.vm) - (x.va + x.vm));
 }
+
+export function secToMinSec(s) {
+  s = Math.round(Number(s) || 0);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${String(sec).padStart(2, '0')}`;
+}

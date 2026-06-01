@@ -1,7 +1,14 @@
 // tests/format.test.js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fmtTime, fmtNum, delta, sortByViews } from '../js/format.js';
+import { fmtTime, fmtNum, delta, sortByViews, secToMinSec } from '../js/format.js';
+
+test('secToMinSec: segundos -> "m:ss"', () => {
+  assert.equal(secToMinSec(119), '1:59');
+  assert.equal(secToMinSec(77), '1:17');
+  assert.equal(secToMinSec(5), '0:05');
+  assert.equal(secToMinSec(0), '0:00');
+});
 
 test('fmtTime: zero or negative -> dash', () => {
   assert.equal(fmtTime(0), '-');
