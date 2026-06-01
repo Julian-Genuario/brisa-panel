@@ -1,0 +1,9 @@
+{
+  "dimensionHeaders": [{"name": "pageTitle"}],
+  "metricHeaders": [{"name": "screenPageViews"}, {"name": "totalUsers"}, {"name": "userEngagementDuration"}],
+  "rows": [
+    {"dimensionValues": [{"value": "Adolescencia, Salud Mental"}], "metricValues": [{"value": "395"}, {"value": "212"}, {"value": "52535"}]},
+    {"dimensionValues": [{"value": "Iniciar sesión"}], "metricValues": [{"value": "731"}, {"value": "500"}, {"value": "24000"}]},
+    {"dimensionValues": [{"value": "Fentanilo y Propofol"}], "metricValues": [{"value": "102"}, {"value": "25"}, {"value": "31000"}]}
+  ]
+}

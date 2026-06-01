@@ -1,0 +1,9 @@
+{
+  "metricHeaders": [
+    {"name": "activeUsers"}, {"name": "newUsers"}, {"name": "sessions"},
+    {"name": "screenPageViews"}, {"name": "averageSessionDuration"}
+  ],
+  "rows": [
+    {"metricValues": [{"value": "979"}, {"value": "802"}, {"value": "1431"}, {"value": "4431"}, {"value": "119.0"}]}
+  ]
+}
