@@ -48,10 +48,8 @@ export function reportRequests(desde, hasta) {
       metrics: [{ name: 'eventCount' }], orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 30 },
     { key: 'geografia', dateRanges, dimensions: [{ name: 'country' }],
       metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 15 },
-    { key: 'edad', dateRanges, dimensions: [{ name: 'userAgeBracket' }],
-      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 12 },
-    { key: 'genero', dateRanges, dimensions: [{ name: 'userGender' }],
-      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 12 },
+    { key: 'ciudad', dateRanges, dimensions: [{ name: 'city' }],
+      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 8 },
   ];
 }
 

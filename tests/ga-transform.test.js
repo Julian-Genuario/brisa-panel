@@ -18,7 +18,7 @@ test('reportRequests: arma las requests con el rango dado', () => {
   assert.deepEqual(resumen.dateRanges, [{ startDate: '2026-03-02', endDate: '2026-03-08' }]);
   assert.ok(resumen.metrics.some(m => m.name === 'activeUsers'));
   assert.deepEqual(reqs.map(r => r.key).sort(),
-    ['canales', 'contenidos', 'edad', 'eventos', 'genero', 'geografia', 'resumen']);
+    ['canales', 'ciudad', 'contenidos', 'eventos', 'geografia', 'resumen']);
 });
 
 test('isSystemPage: filtra navegación / no-contenido', () => {

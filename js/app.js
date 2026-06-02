@@ -53,8 +53,7 @@ async function renderGA(sel) {
 
     const demo = a.demografia || {};
     bars('pais', demo.pais, '%');
-    bars('edad', demo.edad, '%');
-    bars('genero', demo.genero, '%');
+    bars('ciudad', demo.ciudad, '%');
     status('');
   } catch (err) {
     status('Sin datos de GA para este período. Probá otra fecha o reintentá.');

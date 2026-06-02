@@ -57,8 +57,7 @@ export async function handler(event) {
       eventos: normalizeBars(byKey.eventos),
       demografia: {
         pais: normalizeGeografia(byKey.geografia),
-        edad: normalizeDist(byKey.edad, { drop: ['unknown', '(not set)'] }),
-        genero: normalizeDist(byKey.genero, { drop: ['unknown', '(not set)'], map: { male: 'Hombre', female: 'Mujer' } }),
+        ciudad: normalizeDist(byKey.ciudad, { drop: ['(not set)'] }),
       },
       analisis,
       registro: registroFunnel(regFormResp),
