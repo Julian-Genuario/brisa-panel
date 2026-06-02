@@ -27,7 +27,6 @@
     <a href="#s5"><span class="dot"></span>Contenidos</a>
     <a href="#sI"><span class="dot"></span>Inscriptos</a>
     <a href="#s7"><span class="dot"></span>Datos demográficos</a>
-    <a href="#sD"><span class="dot"></span>Definiciones</a>
   </nav>
 
   <div class="side-foot">
@@ -239,44 +238,8 @@
       </div>
     </section>
 
-    <!-- DEFINICIONES -->
-    <section class="sec" id="sD">
-      <div class="sec-head"><span class="sec-num">?</span><h2>Definiciones y metodología</h2></div>
-      <div class="grid g2" style="grid-template-columns:1fr 1fr">
-        <div class="card">
-          <div class="chart-title" style="margin-bottom:14px">Términos del tablero</div>
-          <table>
-            <tbody>
-              <tr><td class="pgname" style="width:40%">Conversión 1</td><td>Nuevos en Home → registro. % de usuarios nuevos que completan el formulario. Sale de GA.</td></tr>
-              <tr><td class="pgname">Conversión 2</td><td>Registro → pago. % de registrados que pagan la suscripción. Sale del <b>backend</b> (GA no lo ve).</td></tr>
-              <tr><td class="pgname">Inscripción al Evento</td><td><span style="color:#c4521f;font-weight:600">[definir con el equipo: ¿qué evento? ¿landing/formulario?]</span></td></tr>
-              <tr><td class="pgname">Webinar Brisa+</td><td><span style="color:#c4521f;font-weight:600">[definir: ¿qué webinar / sección?]</span></td></tr>
-              <tr><td class="pgname">Maniobra de Heimlich (×3)</td><td><span style="color:#c4521f;font-weight:600">[aclarar las 3 entradas: tipo de contenido de cada una]</span></td></tr>
-              <tr><td class="pgname">Calendario de Huertas</td><td>Fechas tipo "1 ENERO", "14 y 15". <span style="color:#c4521f;font-weight:600">[confirmar y reetiquetar]</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card">
-          <div class="chart-title" style="margin-bottom:14px">Cómo se arma el reporte</div>
-          <table>
-            <tbody>
-              <tr><td class="pgname" style="width:40%">Período</td><td>Semanal, de <b>lunes a domingo</b>. Se publica el lunes siguiente al cierre.</td></tr>
-              <tr><td class="pgname">Contenidos</td><td>Lista <b>todo el contenido editorial</b> (no páginas de sistema como login/home/perfil), con todas sus interacciones — no solo los tops.</td></tr>
-              <tr><td class="pgname">Fuente automática</td><td>Google Analytics 4 (tráfico, usuarios, canales, contenidos, eventos, geografía).</td></tr>
-              <tr><td class="pgname">Fuente manual</td><td>Google Sheets con backend (registros/pagos) e inscriptos.</td></tr>
-              <tr><td class="pgname">Verificación</td><td>Registros/pagos se cruzan con backend + pasarelas antes de publicar.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
   </div>
 </div>
-
-<footer class="disc">
-  <b style="color:var(--ink)">Brisa+ · Panel Analítico</b> — Se conecta en vivo a una Google Sheet publicada (carga del equipo) y a Google Analytics 4. Reporte semanal (lun–dom). Estética derivada de brisaplus.com.
-</footer>
 
 <script type="module" src="js/app.js"></script>
 <script>
@@ -293,7 +256,7 @@ window.addEventListener('load',()=>{
 });
 // active nav on scroll
 const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
-const map={s1:0,sA:1,s2:2,s6:3,s5:4,sI:5,s7:6,sD:7};
+const map={s1:0,sA:1,s2:2,s6:3,s5:4,sI:5,s7:6};
 secs.forEach(s=>{
   new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
 });
