@@ -1,5 +1,5 @@
 // js/gaclient.js — llama a la función serverless de GA. Lanza error si falla (el caller maneja "sin datos").
-const BASE = '/.netlify/functions/ga';
+const BASE = '/api/ga';
 
 export async function fetchPeriodo(desde, hasta) {
   const res = await fetch(`${BASE}?desde=${desde}&hasta=${hasta}`);

@@ -7,7 +7,7 @@ import {
   reportRequests, isSystemPage,
   normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeDist, normalizeDemografia, normalizeEvolucion,
   prevPeriod, tendenciaCard, picoCard, destacadoCard, registroFunnel,
-} from '../netlify/functions/ga-transform.js';
+} from '../lib/ga-transform.js';
 
 const load = n => JSON.parse(readFileSync(fileURLToPath(new URL(`../fixtures/${n}`, import.meta.url)), 'utf8'));
 

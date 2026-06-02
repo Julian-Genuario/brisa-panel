@@ -1,10 +1,11 @@
-// netlify/functions/ga.js — consulta GA4 Data API con cuenta de servicio y devuelve JSON normalizado.
+// api/ga.js — función serverless de Vercel: consulta GA4 Data API con cuenta de servicio
+// y devuelve JSON normalizado. Misma lógica que la vieja función de Netlify.
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import {
   reportRequests, evolucionRequest, prevPeriod, picoRequest, regFormRequest,
   normalizeResumen, normalizeBars, normalizeContenidos, normalizeDemografia, normalizeEvolucion,
   tendenciaCard, picoCard, destacadoCard, registroFunnel,
-} from './ga-transform.js';
+} from '../lib/ga-transform.js';
 
 const PROPERTY = `properties/${process.env.GA_PROPERTY_ID}`;
 
@@ -13,26 +14,22 @@ function client() {
   return new BetaAnalyticsDataClient({ credentials });
 }
 
-const json = (status, body) => ({
-  statusCode: status,
-  headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' },
-  body: JSON.stringify(body),
-});
-
 const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
 
-export async function handler(event) {
-  const q = event.queryStringParameters || {};
+export default async function handler(req, res) {
+  const q = req.query || {};
+  res.setHeader('content-type', 'application/json');
+  res.setHeader('cache-control', 'public, max-age=300');
   try {
     const ga = client();
 
     if (q.modo === 'evolucion') {
       const [resp] = await ga.runReport({ property: PROPERTY, ...evolucionRequest('2026-01-01', q.hasta || '2026-12-31') });
-      return json(200, { evolucion: normalizeEvolucion(resp) });
+      return res.status(200).json({ evolucion: normalizeEvolucion(resp) });
     }
 
     if (!isDate(q.desde) || !isDate(q.hasta) || q.desde > q.hasta) {
-      return json(400, { error: 'rango inválido (desde/hasta YYYY-MM-DD)' });
+      return res.status(400).json({ error: 'rango inválido (desde/hasta YYYY-MM-DD)' });
     }
 
     const reqs = reportRequests(q.desde, q.hasta);
@@ -50,7 +47,7 @@ export async function handler(event) {
     const prevActivos = prevResp.rows?.[0]?.metricValues?.[0]?.value || 0;
     const analisis = { ...tendenciaCard(curActivos, prevActivos), ...picoCard(picoResp), ...destacadoCard(contenidos) };
 
-    return json(200, {
+    return res.status(200).json({
       resumen: normalizeResumen(byKey.resumen),
       canales: normalizeBars(byKey.canales),
       contenidos,
@@ -63,6 +60,6 @@ export async function handler(event) {
       registro: registroFunnel(regFormResp),
     });
   } catch (err) {
-    return json(502, { error: 'GA no disponible', detalle: String(err.message || err) });
+    return res.status(502).json({ error: 'GA no disponible', detalle: String(err.message || err) });
   }
 }
