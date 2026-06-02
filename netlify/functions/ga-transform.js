@@ -22,6 +22,8 @@ export function isSystemPage(title) {
   if (/^brisa\s*plus\s*\|/i.test(t)) return true;
   if (/^brisa\+\s*\|/i.test(t)) return true;
   if (low === 'brisaplus' || low === 'brisa+') return true;
+  // Página genérica "Webinar de Brisa+" (sin definir) — los webinars reales tienen otro título.
+  if (low === 'webinar de brisa+' || low === 'webinar de brisa') return true;
   // Resto de no-contenido por palabra clave.
   return NO_CONTENIDO.some(k => low.includes(k));
 }

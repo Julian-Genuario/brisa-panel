@@ -28,6 +28,8 @@ test('isSystemPage: filtra navegación / no-contenido', () => {
   assert.equal(isSystemPage('hero testing | BrisaPlus'), true);
   assert.equal(isSystemPage('Busquedas laborales - Agencia Interstaff | BrisaPlus'), true);
   assert.equal(isSystemPage('Brisa+ | Inscripción Evento'), true);
+  assert.equal(isSystemPage('Webinar de Brisa+'), true);
+  assert.equal(isSystemPage('Webinar: El músculo ¿es el órgano de la longevidad? (EN VIVO) | BrisaPlus'), false);
   assert.equal(isSystemPage('Capacitación de RCP y DEA certificada | BrisaPlus'), false);
   assert.equal(isSystemPage('Adolescencia, Salud Mental'), false);
 });
