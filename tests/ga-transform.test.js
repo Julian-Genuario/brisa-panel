@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   reportRequests, isSystemPage,
-  normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeEvolucion,
+  normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeDist, normalizeEvolucion,
   prevPeriod, tendenciaCard, picoCard, destacadoCard, registroFunnel,
 } from '../netlify/functions/ga-transform.js';
 
@@ -18,7 +18,7 @@ test('reportRequests: arma las requests con el rango dado', () => {
   assert.deepEqual(resumen.dateRanges, [{ startDate: '2026-03-02', endDate: '2026-03-08' }]);
   assert.ok(resumen.metrics.some(m => m.name === 'activeUsers'));
   assert.deepEqual(reqs.map(r => r.key).sort(),
-    ['canales', 'contenidos', 'eventos', 'geografia', 'resumen']);
+    ['canales', 'contenidos', 'edad', 'eventos', 'genero', 'geografia', 'resumen']);
 });
 
 test('isSystemPage: filtra navegación / no-contenido', () => {
@@ -62,6 +62,16 @@ test('normalizeBars: dimension+metric -> [{label,value}]', () => {
   assert.deepEqual(normalizeBars(resp), [
     { label: 'Direct', value: 432 }, { label: 'Paid Social', value: 273 },
   ]);
+});
+
+test('normalizeDist: descarta unknown, traduce y calcula % sobre lo que queda', () => {
+  const resp = { rows: [
+    { dimensionValues: [{ value: 'male' }], metricValues: [{ value: '60' }] },
+    { dimensionValues: [{ value: 'female' }], metricValues: [{ value: '40' }] },
+    { dimensionValues: [{ value: 'unknown' }], metricValues: [{ value: '500' }] },
+  ] };
+  const g = normalizeDist(resp, { drop: ['unknown'], map: { male: 'Hombre', female: 'Mujer' } });
+  assert.deepEqual(g, [{ label: 'Hombre', value: 60 }, { label: 'Mujer', value: 40 }]);
 });
 
 test('normalizeGeografia: agrega % sobre el total', () => {

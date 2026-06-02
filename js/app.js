@@ -15,9 +15,10 @@ async function fetchTab(tab) {
 }
 const status = msg => { const el = document.getElementById('app-status'); if (el) el.textContent = msg; };
 
-function bars(key, items) {
+function bars(key, items, suffix = '') {
+  items = items || [];
   const max = Math.max(1, ...items.map(i => i.value));
-  renderRows(document, key, items, { label: i => i.label, value: i => (i.value ? esNum(i.value) : '—') });
+  renderRows(document, key, items, { label: i => i.label, value: i => (i.value ? esNum(i.value) + suffix : '—') });
   const body = document.querySelector(`[data-rows="${key}"]`);
   if (body) body.querySelectorAll('.fill').forEach((el, i) => { if (items[i]) el.dataset.w = String((items[i].value / max) * 100); });
 }
@@ -41,7 +42,10 @@ async function renderGA(sel) {
       renderRows(document, 'contenidos', a.contenidos, contenidosCellsSimple(), '.tpl-simple');
     }
 
-    bars('geografia', a.geografia);
+    const demo = a.demografia || {};
+    bars('pais', demo.pais, '%');
+    bars('edad', demo.edad, '%');
+    bars('genero', demo.genero, '%');
     status('');
   } catch (err) {
     status('Sin datos de GA para este período. Probá otra fecha o reintentá.');

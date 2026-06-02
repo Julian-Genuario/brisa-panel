@@ -26,8 +26,7 @@
     <a href="#s6"><span class="dot"></span>Conversión</a>
     <a href="#s5"><span class="dot"></span>Contenidos</a>
     <a href="#sI"><span class="dot"></span>Inscriptos</a>
-    <a href="#s7"><span class="dot"></span>Geografía</a>
-    <a href="#s9"><span class="dot"></span>Biotienda · Interstaff</a>
+    <a href="#s7"><span class="dot"></span>Datos demográficos</a>
     <a href="#sD"><span class="dot"></span>Definiciones</a>
   </nav>
 
@@ -219,32 +218,28 @@
       </div>
     </section>
 
-    <!-- 7. GEOGRAFIA -->
+    <!-- 7. DATOS DEMOGRAFICOS -->
     <section class="sec" id="s7">
-      <div class="sec-head"><span class="sec-num">7</span><h2>Distribución geográfica</h2></div>
-      <div class="card">
-        <div class="bars" data-rows="geografia">
-          <template>
-            <div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--orange),#ffab84)"></i></div><span class="bv tnum" data-cell="value"></span></div>
-          </template>
-        </div>
-      </div>
-    </section>
-
-    <!-- 9. BIOTIENDA / INTERSTAFF -->
-    <section class="sec" id="s9">
-      <div class="sec-head"><span class="sec-num">9</span><h2>Clics en Biotienda e Interstaff</h2></div>
-      <div class="grid g2" data-rows="biotienda">
-        <template>
-          <div class="card">
-            <div class="chart-title" data-cell="seccion"></div>
-            <div class="mini-grid" style="margin-top:18px">
-              <div><div class="mnum tnum" data-cell="visitas"></div><div class="mt">Visitas</div></div>
-              <div><div class="mnum tnum" data-cell="unicos"></div><div class="mt">Usuarios únicos</div></div>
-              <div><div class="mnum tnum" data-cell="ratio"></div><div class="mt">Visitas/usuario</div></div>
-            </div>
+      <div class="sec-head"><span class="sec-num">7</span><h2>Datos demográficos</h2></div>
+      <div class="grid g3">
+        <div class="card">
+          <div class="chart-title" style="margin-bottom:14px">País</div>
+          <div class="bars" data-rows="pais">
+            <template><div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--orange),#ffab84)"></i></div><span class="bv tnum" data-cell="value"></span></div></template>
           </div>
-        </template>
+        </div>
+        <div class="card">
+          <div class="chart-title" style="margin-bottom:14px">Edad</div>
+          <div class="bars" data-rows="edad">
+            <template><div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--blue),var(--blue-2))"></i></div><span class="bv tnum" data-cell="value"></span></div></template>
+          </div>
+        </div>
+        <div class="card">
+          <div class="chart-title" style="margin-bottom:14px">Género</div>
+          <div class="bars" data-rows="genero">
+            <template><div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--blue),var(--blue-2))"></i></div><span class="bv tnum" data-cell="value"></span></div></template>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -302,7 +297,7 @@ window.addEventListener('load',()=>{
 });
 // active nav on scroll
 const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
-const map={s1:0,sA:1,s2:2,s6:3,s5:4,sI:5,s7:6,s9:7,sD:8};
+const map={s1:0,sA:1,s2:2,s6:3,s5:4,sI:5,s7:6,sD:7};
 secs.forEach(s=>{
   new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
 });

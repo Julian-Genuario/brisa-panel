@@ -48,6 +48,10 @@ export function reportRequests(desde, hasta) {
       metrics: [{ name: 'eventCount' }], orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 30 },
     { key: 'geografia', dateRanges, dimensions: [{ name: 'country' }],
       metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 15 },
+    { key: 'edad', dateRanges, dimensions: [{ name: 'userAgeBracket' }],
+      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 12 },
+    { key: 'genero', dateRanges, dimensions: [{ name: 'userGender' }],
+      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 12 },
   ];
 }
 
@@ -95,6 +99,17 @@ export function normalizeContenidos(resp) {
     })
     .filter(c => !isSystemPage(c.name))
     .sort((a, b) => b.vistas - a.vistas);
+}
+
+// Distribución % de una dimensión (edad/género): descarta valores en `drop`, traduce con `map`.
+export function normalizeDist(resp, opts = {}) {
+  const drop = (opts.drop || []).map(s => s.toLowerCase());
+  const map = opts.map || {};
+  let rows = (resp.rows || [])
+    .map(r => ({ label: r.dimensionValues[0].value || '', users: NUM(r.metricValues[0].value) }))
+    .filter(r => r.label && !drop.includes(r.label.toLowerCase()));
+  const total = rows.reduce((s, r) => s + r.users, 0) || 1;
+  return rows.map(r => ({ label: map[r.label.toLowerCase()] || r.label, value: Math.round((r.users / total) * 100) }));
 }
 
 export function normalizeGeografia(resp) {
