@@ -29,7 +29,7 @@ async function renderGA(sel) {
     const compare = sel.modo === 'comparar' && sel.b;
     const b = compare ? await fetchPeriodo(sel.b.desde, sel.b.hasta) : null;
 
-    renderFields(document, { resumen: a.resumen, analisis: a.analisis, config: { periodo: compare ? `${sel.a.label} vs ${sel.b.label}` : sel.a.label } });
+    renderFields(document, { resumen: a.resumen, analisis: a.analisis, registro: a.registro, config: { periodo: compare ? `${sel.a.label} vs ${sel.b.label}` : sel.a.label } });
 
     const headSimple = document.querySelector('[data-head="contenidos-simple"]');
     const headCompare = document.querySelector('[data-head="contenidos-compare"]');

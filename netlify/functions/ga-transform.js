@@ -45,7 +45,7 @@ export function reportRequests(desde, hasta) {
       metrics: [{ name: 'screenPageViews' }, { name: 'totalUsers' }, { name: 'userEngagementDuration' }],
       limit: 200 },
     { key: 'eventos', dateRanges, dimensions: [{ name: 'eventName' }],
-      metrics: [{ name: 'eventCount' }], orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 10 },
+      metrics: [{ name: 'eventCount' }], orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 30 },
     { key: 'geografia', dateRanges, dimensions: [{ name: 'country' }],
       metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 15 },
   ];
@@ -147,6 +147,23 @@ export function picoCard(byDayResp) {
   const dia = DIAS[new Date(Date.UTC(y, m, d)).getUTCDay()];
   const label = `${dia} ${d}/${m + 1}`;
   return { pico_valor: label, pico_texto: `Día de mayor tráfico: ${label} con ${esNum(top.v)} sesiones.` };
+}
+
+// Embudo del formulario: de los eventos GA, form_start (iniciaron) y form_submit (completaron).
+export function registroFunnel(eventosResp) {
+  const map = {};
+  for (const r of (eventosResp.rows || [])) map[r.dimensionValues[0].value] = NUM(r.metricValues[0].value);
+  const ini = map['form_start'] || 0;
+  const fin = map['form_submit'] || 0;
+  const pct = ini ? Math.round((fin / ini) * 100) : 0;
+  return {
+    visitas: esNum(ini),
+    completaron: esNum(fin),
+    pct: ini ? `${pct}%` : '—',
+    texto: ini
+      ? `De ${esNum(ini)} que iniciaron el formulario, ${esNum(fin)} lo completaron.`
+      : 'Sin datos de formularios en el período.',
+  };
 }
 
 export function destacadoCard(contenidos) {

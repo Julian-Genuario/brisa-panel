@@ -3,7 +3,7 @@ import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import {
   reportRequests, evolucionRequest, prevPeriod, picoRequest,
   normalizeResumen, normalizeBars, normalizeContenidos, normalizeGeografia, normalizeEvolucion,
-  tendenciaCard, picoCard, destacadoCard,
+  tendenciaCard, picoCard, destacadoCard, registroFunnel,
 } from './ga-transform.js';
 
 const PROPERTY = `properties/${process.env.GA_PROPERTY_ID}`;
@@ -56,6 +56,7 @@ export async function handler(event) {
       eventos: normalizeBars(byKey.eventos),
       geografia: normalizeGeografia(byKey.geografia),
       analisis,
+      registro: registroFunnel(byKey.eventos),
     });
   } catch (err) {
     return json(502, { error: 'GA no disponible', detalle: String(err.message || err) });

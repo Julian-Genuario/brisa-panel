@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   reportRequests, isSystemPage,
   normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeEvolucion,
-  prevPeriod, tendenciaCard, picoCard, destacadoCard,
+  prevPeriod, tendenciaCard, picoCard, destacadoCard, registroFunnel,
 } from '../netlify/functions/ga-transform.js';
 
 const load = n => JSON.parse(readFileSync(fileURLToPath(new URL(`../fixtures/${n}`, import.meta.url)), 'utf8'));
@@ -94,6 +94,23 @@ test('picoCard: día con más sesiones', () => {
   const c = picoCard(resp);
   assert.equal(c.pico_valor, 'mié 4/3'); // 2026-03-04 es miércoles
   assert.match(c.pico_texto, /120 sesiones/);
+});
+
+test('registroFunnel: form_start/form_submit -> visitas, completaron, %', () => {
+  const resp = { rows: [
+    { dimensionValues: [{ value: 'page_view' }], metricValues: [{ value: '5000' }] },
+    { dimensionValues: [{ value: 'form_start' }], metricValues: [{ value: '4841' }] },
+    { dimensionValues: [{ value: 'form_submit' }], metricValues: [{ value: '3937' }] },
+  ] };
+  const f = registroFunnel(resp);
+  assert.equal(f.visitas, '4.841');
+  assert.equal(f.completaron, '3.937');
+  assert.equal(f.pct, '81%');
+});
+
+test('registroFunnel: sin form events -> guiones', () => {
+  const f = registroFunnel({ rows: [{ dimensionValues: [{ value: 'page_view' }], metricValues: [{ value: '5' }] }] });
+  assert.equal(f.pct, '—');
 });
 
 test('destacadoCard: contenido más visto (limpia sufijo)', () => {

@@ -155,9 +155,13 @@
       <div class="sec-head"><span class="sec-num">6</span><h2>Conversiones (medidas en el tiempo)</h2></div>
       <div class="grid g2" style="grid-template-columns:1fr 1fr">
         <div class="card">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><div class="chart-title" style="margin:0">Conversión 1 · Nuevos en Home → Registro</div></div>
-          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--blue-2)" data-field="conversion.conv1_valor">—</div>
-          <div style="font-size:12.5px;color:var(--muted);margin-top:6px" data-field="conversion.conv1_texto">% de usuarios nuevos que completan el formulario de registro. Mide si la Home convierte.</div>
+          <div class="chart-title" style="margin-bottom:8px">Conversión 1 · Completado del formulario</div>
+          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--blue-2)" data-field="registro.pct">—</div>
+          <div style="display:flex;gap:30px;margin:14px 0 8px">
+            <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="registro.visitas">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Iniciaron</div></div>
+            <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="registro.completaron">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Completaron</div></div>
+          </div>
+          <div style="font-size:12.5px;color:var(--muted)" data-field="registro.texto"></div>
         </div>
         <div class="card">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><div class="chart-title" style="margin:0">Conversión 2 · Registro → Pago</div></div>
