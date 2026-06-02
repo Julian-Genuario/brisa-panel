@@ -1,8 +1,9 @@
 // netlify/functions/ga.js — consulta GA4 Data API con cuenta de servicio y devuelve JSON normalizado.
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import {
-  reportRequests, evolucionRequest,
+  reportRequests, evolucionRequest, prevPeriod, picoRequest,
   normalizeResumen, normalizeBars, normalizeContenidos, normalizeGeografia, normalizeEvolucion,
+  tendenciaCard, picoCard, destacadoCard,
 } from './ga-transform.js';
 
 const PROPERTY = `properties/${process.env.GA_PROPERTY_ID}`;
@@ -35,17 +36,26 @@ export async function handler(event) {
     }
 
     const reqs = reportRequests(q.desde, q.hasta);
-    const responses = await Promise.all(
-      reqs.map(({ key, ...rep }) => ga.runReport({ property: PROPERTY, ...rep }).then(([r]) => [key, r]))
-    );
+    const prev = prevPeriod(q.desde, q.hasta);
+    const [responses, prevResp, picoResp] = await Promise.all([
+      Promise.all(reqs.map(({ key, ...rep }) => ga.runReport({ property: PROPERTY, ...rep }).then(([r]) => [key, r]))),
+      ga.runReport({ property: PROPERTY, dateRanges: [{ startDate: prev.desde, endDate: prev.hasta }], metrics: [{ name: 'activeUsers' }] }).then(([r]) => r),
+      ga.runReport({ property: PROPERTY, ...picoRequest(q.desde, q.hasta) }).then(([r]) => r),
+    ]);
     const byKey = Object.fromEntries(responses);
+    const contenidos = normalizeContenidos(byKey.contenidos);
+
+    const curActivos = byKey.resumen.rows?.[0]?.metricValues?.[0]?.value || 0;
+    const prevActivos = prevResp.rows?.[0]?.metricValues?.[0]?.value || 0;
+    const analisis = { ...tendenciaCard(curActivos, prevActivos), ...picoCard(picoResp), ...destacadoCard(contenidos) };
 
     return json(200, {
       resumen: normalizeResumen(byKey.resumen),
       canales: normalizeBars(byKey.canales),
-      contenidos: normalizeContenidos(byKey.contenidos),
+      contenidos,
       eventos: normalizeBars(byKey.eventos),
       geografia: normalizeGeografia(byKey.geografia),
+      analisis,
     });
   } catch (err) {
     return json(502, { error: 'GA no disponible', detalle: String(err.message || err) });

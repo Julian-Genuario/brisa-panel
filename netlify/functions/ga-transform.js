@@ -105,6 +105,57 @@ export function normalizeGeografia(resp) {
   return rows.map(r => ({ label: r.label, value: Math.round((r.users / total) * 100) }));
 }
 
+// --- Análisis automático ---
+
+// Período anterior de igual longitud, terminando el día antes de `desde`.
+export function prevPeriod(desde, hasta) {
+  const d0 = new Date(desde + 'T00:00:00Z');
+  const d1 = new Date(hasta + 'T00:00:00Z');
+  const lenDays = Math.round((d1 - d0) / 86400000) + 1;
+  const prevHasta = new Date(d0); prevHasta.setUTCDate(prevHasta.getUTCDate() - 1);
+  const prevDesde = new Date(prevHasta); prevDesde.setUTCDate(prevDesde.getUTCDate() - (lenDays - 1));
+  const iso = d => d.toISOString().slice(0, 10);
+  return { desde: iso(prevDesde), hasta: iso(prevHasta) };
+}
+
+// Request GA por día (para el pico).
+export function picoRequest(desde, hasta) {
+  return {
+    dateRanges: [{ startDate: desde, endDate: hasta }],
+    dimensions: [{ name: 'date' }],
+    metrics: [{ name: 'sessions' }],
+    orderBys: [{ dimension: { dimensionName: 'date' } }],
+  };
+}
+
+export function tendenciaCard(cur, prev) {
+  cur = NUM(cur); prev = NUM(prev);
+  if (!prev) return { tendencia_valor: '—', tendencia_texto: 'Sin período anterior para comparar.' };
+  const pct = Math.round(((cur - prev) / prev) * 100);
+  const valor = pct > 0 ? `▲ +${pct}%` : (pct < 0 ? `▼ ${pct}%` : '→ 0%');
+  const verbo = pct > 0 ? 'suben' : (pct < 0 ? 'bajan' : 'se mantienen');
+  return { tendencia_valor: valor, tendencia_texto: `Usuarios activos ${verbo} vs. el período anterior (${esNum(prev)} → ${esNum(cur)}).` };
+}
+
+const DIAS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+export function picoCard(byDayResp) {
+  const rows = (byDayResp.rows || []).map(r => ({ date: r.dimensionValues[0].value, v: NUM(r.metricValues[0].value) }));
+  if (!rows.length) return { pico_valor: '—', pico_texto: 'Sin datos diarios en el período.' };
+  rows.sort((a, b) => b.v - a.v);
+  const top = rows[0];
+  const y = +top.date.slice(0, 4), m = +top.date.slice(4, 6) - 1, d = +top.date.slice(6, 8);
+  const dia = DIAS[new Date(Date.UTC(y, m, d)).getUTCDay()];
+  const label = `${dia} ${d}/${m + 1}`;
+  return { pico_valor: label, pico_texto: `Día de mayor tráfico: ${label} con ${esNum(top.v)} sesiones.` };
+}
+
+export function destacadoCard(contenidos) {
+  if (!contenidos || !contenidos.length) return { curiosidad_valor: '—', curiosidad_texto: 'Sin contenidos en el período.' };
+  const top = contenidos[0]; // ya ordenado por vistas
+  const name = top.name.replace(/\s*\|\s*BrisaPlus\s*$/i, '');
+  return { curiosidad_valor: esNum(top.vistas), curiosidad_texto: `Lo más visto: “${name}”.` };
+}
+
 export function normalizeEvolucion(resp) {
   return (resp.rows || []).map(r => {
     const ym = r.dimensionValues[0].value; // "YYYYMM"

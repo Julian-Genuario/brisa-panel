@@ -29,7 +29,7 @@ async function renderGA(sel) {
     const compare = sel.modo === 'comparar' && sel.b;
     const b = compare ? await fetchPeriodo(sel.b.desde, sel.b.hasta) : null;
 
-    renderFields(document, { resumen: a.resumen, config: { periodo: compare ? `${sel.a.label} vs ${sel.b.label}` : sel.a.label } });
+    renderFields(document, { resumen: a.resumen, analisis: a.analisis, config: { periodo: compare ? `${sel.a.label} vs ${sel.b.label}` : sel.a.label } });
 
     const headSimple = document.querySelector('[data-head="contenidos-simple"]');
     const headCompare = document.querySelector('[data-head="contenidos-compare"]');
@@ -77,11 +77,11 @@ async function loadEvolucion() {
 async function main() {
   status('Cargando…');
   try {
-    const [config, analisis, conversion, inscriptos] = await Promise.all(
-      ['Config', 'Analisis', 'Conversion', 'Inscriptos'].map(fetchTab)
+    const [config, conversion, inscriptos] = await Promise.all(
+      ['Config', 'Conversion', 'Inscriptos'].map(fetchTab)
     );
     renderFields(document, {
-      config: buildConfig(config.rows), analisis: buildConfig(analisis.rows), conversion: buildConfig(conversion.rows),
+      config: buildConfig(config.rows), conversion: buildConfig(conversion.rows),
     });
     window.__inscriptosRows = inscriptos.rows;
 

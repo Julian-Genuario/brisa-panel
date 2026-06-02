@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   reportRequests, isSystemPage,
   normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeEvolucion,
+  prevPeriod, tendenciaCard, picoCard, destacadoCard,
 } from '../netlify/functions/ga-transform.js';
 
 const load = n => JSON.parse(readFileSync(fileURLToPath(new URL(`../fixtures/${n}`, import.meta.url)), 'utf8'));
@@ -71,6 +72,35 @@ test('normalizeGeografia: agrega % sobre el total', () => {
   const g = normalizeGeografia(resp);
   assert.equal(g[0].label, 'Argentina');
   assert.equal(g[0].value, 80); // 48/60 * 100
+});
+
+test('prevPeriod: semana anterior de igual longitud', () => {
+  // semana 2026-03-02 a 2026-03-08 (7 días) -> anterior 2026-02-23 a 2026-03-01
+  assert.deepEqual(prevPeriod('2026-03-02', '2026-03-08'), { desde: '2026-02-23', hasta: '2026-03-01' });
+});
+
+test('tendenciaCard: sube / baja / sin previo', () => {
+  assert.equal(tendenciaCard(150, 100).tendencia_valor, '▲ +50%');
+  assert.equal(tendenciaCard(50, 100).tendencia_valor, '▼ -50%');
+  assert.equal(tendenciaCard(100, 0).tendencia_valor, '—');
+});
+
+test('picoCard: día con más sesiones', () => {
+  const resp = { rows: [
+    { dimensionValues: [{ value: '20260302' }], metricValues: [{ value: '40' }] },
+    { dimensionValues: [{ value: '20260304' }], metricValues: [{ value: '120' }] },
+    { dimensionValues: [{ value: '20260305' }], metricValues: [{ value: '30' }] },
+  ] };
+  const c = picoCard(resp);
+  assert.equal(c.pico_valor, 'mié 4/3'); // 2026-03-04 es miércoles
+  assert.match(c.pico_texto, /120 sesiones/);
+});
+
+test('destacadoCard: contenido más visto (limpia sufijo)', () => {
+  const c = destacadoCard([{ name: 'Adolescencia | BrisaPlus', vistas: 395 }, { name: 'Otro', vistas: 10 }]);
+  assert.equal(c.curiosidad_valor, '395');
+  assert.match(c.curiosidad_texto, /Adolescencia/);
+  assert.ok(!/BrisaPlus/.test(c.curiosidad_texto));
 });
 
 test('normalizeEvolucion: yearMonth -> filas mensuales con recurrentes', () => {
