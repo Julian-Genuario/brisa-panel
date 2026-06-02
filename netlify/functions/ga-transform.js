@@ -6,15 +6,24 @@ const esNum = n => Number(n).toLocaleString('es-AR');
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio',
   'Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-const SYSTEM = [
-  'login', 'iniciar sesión', 'iniciar sesion', 'home', 'inicio', 'registro',
-  'recuperar', 'suscripci', 'mi perfil', 'perfil', 'gracias', 'términos',
-  'terminos', 'favoritos', 'buscador', 'categoría', 'categoria', 'paypal',
+// Palabras clave que marcan páginas que NO son contenido editorial
+// (test, empleos/Interstaff, inscripción a eventos, legales, 404).
+const NO_CONTENIDO = [
+  'test', 'testing', 'página no encontrada', 'pagina no encontrada',
+  'empleo', 'busquedas laborales', 'búsquedas laborales', 'interstaff',
+  'inscripción evento', 'inscripcion evento', 'política de privacidad',
+  'politica de privacidad', 'términos', 'terminos',
 ];
 
 export function isSystemPage(title) {
-  const t = String(title || '').toLowerCase();
-  return SYSTEM.some(s => t.includes(s));
+  const t = String(title || '').trim();
+  const low = t.toLowerCase();
+  // Páginas de navegación/categoría: "BrisaPlus | X" o "Brisa+ | X", o la home a secas.
+  if (/^brisa\s*plus\s*\|/i.test(t)) return true;
+  if (/^brisa\+\s*\|/i.test(t)) return true;
+  if (low === 'brisaplus' || low === 'brisa+') return true;
+  // Resto de no-contenido por palabra clave.
+  return NO_CONTENIDO.some(k => low.includes(k));
 }
 
 function secToMinSec(s) {

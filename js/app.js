@@ -43,7 +43,6 @@ async function renderGA(sel) {
 
     bars('canales', a.canales);
     bars('geografia', a.geografia);
-    bars('eventos', a.eventos);
     status('');
   } catch (err) {
     status('Sin datos de GA para este período. Probá otra fecha o reintentá.');

@@ -28,7 +28,6 @@
     <a href="#s5"><span class="dot"></span>Contenidos<span class="src src-ga">GA4</span></a>
     <a href="#sI"><span class="dot"></span>Inscriptos<span class="src src-man">Manual</span></a>
     <a href="#s7"><span class="dot"></span>Geografía<span class="src src-ga">GA4</span></a>
-    <a href="#s8"><span class="dot"></span>Eventos<span class="src src-ga">GA4</span></a>
     <a href="#s9"><span class="dot"></span>Biotienda · Interstaff<span class="src src-ga">GA4</span></a>
     <a href="#sD"><span class="dot"></span>Definiciones<span class="src src-man">Glosario</span></a>
   </nav>
@@ -250,18 +249,6 @@
       </div>
     </section>
 
-    <!-- 8. EVENTOS -->
-    <section class="sec" id="s8">
-      <div class="sec-head"><span class="sec-num">8</span><h2>Eventos principales</h2><span class="tag tag-ga">Google Analytics</span></div>
-      <div class="card">
-        <div class="bars" data-rows="eventos">
-          <template>
-            <div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--blue),var(--blue-2))"></i></div><span class="bv tnum" data-cell="value"></span></div>
-          </template>
-        </div>
-      </div>
-    </section>
-
     <!-- 9. BIOTIENDA / INTERSTAFF -->
     <section class="sec" id="s9">
       <div class="sec-head"><span class="sec-num">9</span><h2>Clics en Biotienda e Interstaff</h2><span class="tag tag-man" style="background:#fff4f0;color:#c4521f">Prioridad</span></div>
@@ -333,7 +320,7 @@ window.addEventListener('load',()=>{
 });
 // active nav on scroll
 const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
-const map={s1:0,sA:1,s2:2,s4:3,s6:4,s5:5,sI:6,s7:7,s8:8,s9:9,sD:10};
+const map={s1:0,sA:1,s2:2,s4:3,s6:4,s5:5,sI:6,s7:7,s9:8,sD:9};
 secs.forEach(s=>{
   new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
 });

@@ -20,11 +20,15 @@ test('reportRequests: arma las requests con el rango dado', () => {
     ['canales', 'contenidos', 'eventos', 'geografia', 'resumen']);
 });
 
-test('isSystemPage: filtra páginas de sistema', () => {
-  assert.equal(isSystemPage('Iniciar sesión'), true);
-  assert.equal(isSystemPage('Login'), true);
-  assert.equal(isSystemPage('Mi perfil'), true);
-  assert.equal(isSystemPage('Registro'), true);
+test('isSystemPage: filtra navegación / no-contenido', () => {
+  assert.equal(isSystemPage('BrisaPlus | Empleo'), true);
+  assert.equal(isSystemPage('BrisaPlus | Congresos'), true);
+  assert.equal(isSystemPage('BrisaPlus | Buscar'), true);
+  assert.equal(isSystemPage('BrisaPlus'), true);
+  assert.equal(isSystemPage('hero testing | BrisaPlus'), true);
+  assert.equal(isSystemPage('Busquedas laborales - Agencia Interstaff | BrisaPlus'), true);
+  assert.equal(isSystemPage('Brisa+ | Inscripción Evento'), true);
+  assert.equal(isSystemPage('Capacitación de RCP y DEA certificada | BrisaPlus'), false);
   assert.equal(isSystemPage('Adolescencia, Salud Mental'), false);
 });
 
