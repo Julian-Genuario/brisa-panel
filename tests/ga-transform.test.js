@@ -96,20 +96,21 @@ test('picoCard: día con más sesiones', () => {
   assert.match(c.pico_texto, /120 sesiones/);
 });
 
-test('registroFunnel: form_start/form_submit -> visitas, completaron, %', () => {
+test('registroFunnel: solo cuenta formularios en páginas de registro', () => {
   const resp = { rows: [
-    { dimensionValues: [{ value: 'page_view' }], metricValues: [{ value: '5000' }] },
-    { dimensionValues: [{ value: 'form_start' }], metricValues: [{ value: '4841' }] },
-    { dimensionValues: [{ value: 'form_submit' }], metricValues: [{ value: '3937' }] },
+    { dimensionValues: [{ value: 'Registro | BrisaPlus' }, { value: 'form_start' }], metricValues: [{ value: '300' }] },
+    { dimensionValues: [{ value: 'Registro | BrisaPlus' }, { value: 'form_submit' }], metricValues: [{ value: '240' }] },
+    { dimensionValues: [{ value: 'Login | BrisaPlus' }, { value: 'form_start' }], metricValues: [{ value: '500' }] },
+    { dimensionValues: [{ value: 'Contacto | BrisaPlus' }, { value: 'form_submit' }], metricValues: [{ value: '99' }] },
   ] };
   const f = registroFunnel(resp);
-  assert.equal(f.visitas, '4.841');
-  assert.equal(f.completaron, '3.937');
-  assert.equal(f.pct, '81%');
+  assert.equal(f.visitas, '300');     // login/contacto excluidos
+  assert.equal(f.completaron, '240');
+  assert.equal(f.pct, '80%');
 });
 
-test('registroFunnel: sin form events -> guiones', () => {
-  const f = registroFunnel({ rows: [{ dimensionValues: [{ value: 'page_view' }], metricValues: [{ value: '5' }] }] });
+test('registroFunnel: sin páginas de registro -> guiones', () => {
+  const f = registroFunnel({ rows: [{ dimensionValues: [{ value: 'Login | BrisaPlus' }, { value: 'form_start' }], metricValues: [{ value: '5' }] }] });
   assert.equal(f.pct, '—');
 });
 

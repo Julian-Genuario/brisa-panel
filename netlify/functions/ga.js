@@ -1,7 +1,7 @@
 // netlify/functions/ga.js — consulta GA4 Data API con cuenta de servicio y devuelve JSON normalizado.
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import {
-  reportRequests, evolucionRequest, prevPeriod, picoRequest,
+  reportRequests, evolucionRequest, prevPeriod, picoRequest, regFormRequest,
   normalizeResumen, normalizeBars, normalizeContenidos, normalizeGeografia, normalizeEvolucion,
   tendenciaCard, picoCard, destacadoCard, registroFunnel,
 } from './ga-transform.js';
@@ -37,10 +37,11 @@ export async function handler(event) {
 
     const reqs = reportRequests(q.desde, q.hasta);
     const prev = prevPeriod(q.desde, q.hasta);
-    const [responses, prevResp, picoResp] = await Promise.all([
+    const [responses, prevResp, picoResp, regFormResp] = await Promise.all([
       Promise.all(reqs.map(({ key, ...rep }) => ga.runReport({ property: PROPERTY, ...rep }).then(([r]) => [key, r]))),
       ga.runReport({ property: PROPERTY, dateRanges: [{ startDate: prev.desde, endDate: prev.hasta }], metrics: [{ name: 'activeUsers' }] }).then(([r]) => r),
       ga.runReport({ property: PROPERTY, ...picoRequest(q.desde, q.hasta) }).then(([r]) => r),
+      ga.runReport({ property: PROPERTY, ...regFormRequest(q.desde, q.hasta) }).then(([r]) => r),
     ]);
     const byKey = Object.fromEntries(responses);
     const contenidos = normalizeContenidos(byKey.contenidos);
@@ -56,7 +57,7 @@ export async function handler(event) {
       eventos: normalizeBars(byKey.eventos),
       geografia: normalizeGeografia(byKey.geografia),
       analisis,
-      registro: registroFunnel(byKey.eventos),
+      registro: registroFunnel(regFormResp),
     });
   } catch (err) {
     return json(502, { error: 'GA no disponible', detalle: String(err.message || err) });

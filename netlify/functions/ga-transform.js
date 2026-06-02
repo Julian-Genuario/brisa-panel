@@ -149,20 +149,41 @@ export function picoCard(byDayResp) {
   return { pico_valor: label, pico_texto: `Día de mayor tráfico: ${label} con ${esNum(top.v)} sesiones.` };
 }
 
-// Embudo del formulario: de los eventos GA, form_start (iniciaron) y form_submit (completaron).
-export function registroFunnel(eventosResp) {
-  const map = {};
-  for (const r of (eventosResp.rows || [])) map[r.dimensionValues[0].value] = NUM(r.metricValues[0].value);
-  const ini = map['form_start'] || 0;
-  const fin = map['form_submit'] || 0;
+// Report: eventos de formulario cruzados por la página donde ocurren.
+export function regFormRequest(desde, hasta) {
+  return {
+    dateRanges: [{ startDate: desde, endDate: hasta }],
+    dimensions: [{ name: 'pageTitle' }, { name: 'eventName' }],
+    metrics: [{ name: 'eventCount' }],
+    dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['form_start', 'form_submit'] } } },
+    limit: 250,
+  };
+}
+
+const REGISTRO_RE = /registr|suscrib|crear cuenta|sign[\s-]?up|sumate|sumáte/i;
+
+// Embudo del formulario de REGISTRO: suma form_start/form_submit solo en páginas de registro.
+export function registroFunnel(regFormResp, pattern = REGISTRO_RE) {
+  let ini = 0, fin = 0;
+  const paginas = new Set();
+  for (const r of (regFormResp.rows || [])) {
+    const page = r.dimensionValues[0].value || '';
+    const ev = r.dimensionValues[1].value;
+    const n = NUM(r.metricValues[0].value);
+    if (!pattern.test(page)) continue;
+    paginas.add(page);
+    if (ev === 'form_start') ini += n;
+    else if (ev === 'form_submit') fin += n;
+  }
   const pct = ini ? Math.round((fin / ini) * 100) : 0;
   return {
     visitas: esNum(ini),
     completaron: esNum(fin),
     pct: ini ? `${pct}%` : '—',
     texto: ini
-      ? `De ${esNum(ini)} que iniciaron el formulario, ${esNum(fin)} lo completaron.`
-      : 'Sin datos de formularios en el período.',
+      ? `De ${esNum(ini)} que iniciaron el registro, ${esNum(fin)} lo completaron.`
+      : 'Sin datos del formulario de registro en el período.',
+    _paginas: [...paginas],
   };
 }
 
