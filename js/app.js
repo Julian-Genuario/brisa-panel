@@ -17,10 +17,19 @@ const status = msg => { const el = document.getElementById('app-status'); if (el
 
 function bars(key, items, suffix = '') {
   items = items || [];
+  const body = document.querySelector(`[data-rows="${key}"]`);
+  if (!body) return;
+  if (!items.length) {
+    [...body.children].forEach(c => { if (c.tagName !== 'TEMPLATE') c.remove(); });
+    const p = document.createElement('div');
+    p.style.cssText = 'font-size:12px;color:var(--muted-2)';
+    p.textContent = 'Sin datos para este período.';
+    body.appendChild(p);
+    return;
+  }
   const max = Math.max(1, ...items.map(i => i.value));
   renderRows(document, key, items, { label: i => i.label, value: i => (i.value ? esNum(i.value) + suffix : '—') });
-  const body = document.querySelector(`[data-rows="${key}"]`);
-  if (body) body.querySelectorAll('.fill').forEach((el, i) => { if (items[i]) el.dataset.w = String((items[i].value / max) * 100); });
+  body.querySelectorAll('.fill').forEach((el, i) => { if (items[i]) el.dataset.w = String((items[i].value / max) * 100); });
 }
 
 async function renderGA(sel) {
