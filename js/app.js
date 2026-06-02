@@ -41,7 +41,6 @@ async function renderGA(sel) {
       renderRows(document, 'contenidos', a.contenidos, contenidosCellsSimple(), '.tpl-simple');
     }
 
-    bars('canales', a.canales);
     bars('geografia', a.geografia);
     status('');
   } catch (err) {
