@@ -23,8 +23,8 @@
     <a href="#s1" class="active"><span class="dot"></span>Resumen general</a>
     <a href="#sA"><span class="dot"></span>Análisis y tendencias</a>
     <a href="#s2"><span class="dot"></span>Evolución</a>
-    <a href="#s6"><span class="dot"></span>Conversión</a>
     <a href="#s5"><span class="dot"></span>Contenidos</a>
+    <a href="#s6"><span class="dot"></span>Conversión</a>
     <a href="#sI"><span class="dot"></span>Inscriptos</a>
     <a href="#s7"><span class="dot"></span>Datos demográficos</a>
   </nav>
@@ -135,27 +135,6 @@
       </div>
     </section>
 
-    <!-- 6. CONVERSION -->
-    <section class="sec" id="s6">
-      <div class="sec-head"><span class="sec-num">6</span><h2>Conversiones (medidas en el tiempo)</h2></div>
-      <div class="grid g2" style="grid-template-columns:1fr 1fr">
-        <div class="card">
-          <div class="chart-title" style="margin-bottom:8px">Conversión 1 · Completado del formulario</div>
-          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--blue-2)" data-field="registro.pct">—</div>
-          <div style="display:flex;gap:30px;margin:14px 0 8px">
-            <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="registro.visitas">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Iniciaron</div></div>
-            <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="registro.completaron">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Completaron</div></div>
-          </div>
-          <div style="font-size:12.5px;color:var(--muted)" data-field="registro.texto"></div>
-        </div>
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><div class="chart-title" style="margin:0">Conversión 2 · Registro → Pago</div></div>
-          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--orange)" data-field="conversion.conv2_valor">—</div>
-          <div style="font-size:12.5px;color:var(--muted);margin-top:6px" data-field="conversion.conv2_texto">% de registrados que se vuelven suscriptores pagos. Sale del backend — GA no lo ve.</div>
-        </div>
-      </div>
-    </section>
-
     <!-- 5. CONTENIDOS -->
     <section class="sec" id="s5">
       <div class="sec-head"><span class="sec-num">5</span><h2>Contenidos — comparativa por período</h2></div>
@@ -194,6 +173,27 @@
             </template>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- 6. CONVERSION -->
+    <section class="sec" id="s6">
+      <div class="sec-head"><span class="sec-num">6</span><h2>Conversiones (medidas en el tiempo)</h2></div>
+      <div class="grid g2" style="grid-template-columns:1fr 1fr">
+        <div class="card">
+          <div class="chart-title" style="margin-bottom:8px">Conversión 1 · Completado del formulario</div>
+          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--blue-2)" data-field="registro.pct">—</div>
+          <div style="display:flex;gap:30px;margin:14px 0 8px">
+            <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="registro.visitas">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Iniciaron</div></div>
+            <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="registro.completaron">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Completaron</div></div>
+          </div>
+          <div style="font-size:12.5px;color:var(--muted)" data-field="registro.texto"></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><div class="chart-title" style="margin:0">Conversión 2 · Registro → Pago</div></div>
+          <div style="font-size:42px;font-weight:800;letter-spacing:-1.5px;color:var(--orange)" data-field="conversion.conv2_valor">—</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:6px" data-field="conversion.conv2_texto">% de registrados que se vuelven suscriptores pagos. Sale del backend — GA no lo ve.</div>
+        </div>
       </div>
     </section>
 
@@ -256,7 +256,7 @@ window.addEventListener('load',()=>{
 });
 // active nav on scroll
 const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
-const map={s1:0,sA:1,s2:2,s6:3,s5:4,sI:5,s7:6};
+const map={s1:0,sA:1,s2:2,s5:3,s6:4,sI:5,s7:6};
 secs.forEach(s=>{
   new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
 });
