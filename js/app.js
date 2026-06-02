@@ -32,6 +32,27 @@ function bars(key, items, suffix = '') {
   body.querySelectorAll('.fill').forEach((el, i) => { if (items[i]) el.dataset.w = String((items[i].value / max) * 100); });
 }
 
+// Bloque demográfico: cada barra muestra número exacto · % y un total al pie.
+function demoBlock(key, data) {
+  const body = document.querySelector(`[data-rows="${key}"]`);
+  if (!body) return;
+  const items = (data && data.items) || [];
+  const tot = document.querySelector(`[data-total="${key}"]`);
+  if (!items.length) {
+    [...body.children].forEach(c => { if (c.tagName !== 'TEMPLATE') c.remove(); });
+    const p = document.createElement('div');
+    p.style.cssText = 'font-size:12px;color:var(--muted-2)';
+    p.textContent = 'Sin datos para este período.';
+    body.appendChild(p);
+    if (tot) tot.textContent = '';
+    return;
+  }
+  const max = Math.max(1, ...items.map(i => i.pct));
+  renderRows(document, key, items, { label: i => i.label, value: i => `${esNum(i.n)} · ${i.pct}%` });
+  body.querySelectorAll('.fill').forEach((el, i) => { if (items[i]) el.dataset.w = String((items[i].pct / max) * 100); });
+  if (tot) tot.textContent = `Total: ${esNum((data && data.total) || 0)}`;
+}
+
 async function renderGA(sel) {
   status('Cargando GA…');
   try {
@@ -52,8 +73,8 @@ async function renderGA(sel) {
     }
 
     const demo = a.demografia || {};
-    bars('pais', demo.pais, '%');
-    bars('ciudad', demo.ciudad, '%');
+    demoBlock('pais', demo.pais);
+    demoBlock('ciudad', demo.ciudad);
     status('');
   } catch (err) {
     status('Sin datos de GA para este período. Probá otra fecha o reintentá.');

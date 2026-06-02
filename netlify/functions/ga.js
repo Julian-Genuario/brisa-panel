@@ -2,7 +2,7 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import {
   reportRequests, evolucionRequest, prevPeriod, picoRequest, regFormRequest,
-  normalizeResumen, normalizeBars, normalizeContenidos, normalizeGeografia, normalizeDist, normalizeEvolucion,
+  normalizeResumen, normalizeBars, normalizeContenidos, normalizeDemografia, normalizeEvolucion,
   tendenciaCard, picoCard, destacadoCard, registroFunnel,
 } from './ga-transform.js';
 
@@ -56,8 +56,8 @@ export async function handler(event) {
       contenidos,
       eventos: normalizeBars(byKey.eventos),
       demografia: {
-        pais: normalizeGeografia(byKey.geografia),
-        ciudad: normalizeDist(byKey.ciudad, { drop: ['(not set)'] }),
+        pais: normalizeDemografia(byKey.geografia, { top: 8 }),
+        ciudad: normalizeDemografia(byKey.ciudad, { drop: ['(not set)'], top: 8 }),
       },
       analisis,
       registro: registroFunnel(regFormResp),

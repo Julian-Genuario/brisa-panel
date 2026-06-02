@@ -47,9 +47,9 @@ export function reportRequests(desde, hasta) {
     { key: 'eventos', dateRanges, dimensions: [{ name: 'eventName' }],
       metrics: [{ name: 'eventCount' }], orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: 30 },
     { key: 'geografia', dateRanges, dimensions: [{ name: 'country' }],
-      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 15 },
+      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 50 },
     { key: 'ciudad', dateRanges, dimensions: [{ name: 'city' }],
-      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 8 },
+      metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 50 },
   ];
 }
 
@@ -97,6 +97,23 @@ export function normalizeContenidos(resp) {
     })
     .filter(c => !isSystemPage(c.name))
     .sort((a, b) => b.vistas - a.vistas);
+}
+
+// Demográficos: devuelve { total, items:[{label, n, pct}] } con los top `top`.
+export function normalizeDemografia(resp, opts = {}) {
+  const drop = (opts.drop || []).map(s => s.toLowerCase());
+  const map = opts.map || {};
+  const top = opts.top || 8;
+  const rows = (resp.rows || [])
+    .map(r => ({ label: r.dimensionValues[0].value || '', n: NUM(r.metricValues[0].value) }))
+    .filter(r => r.label && !drop.includes(r.label.toLowerCase()));
+  const total = rows.reduce((s, r) => s + r.n, 0);
+  const items = rows.slice(0, top).map(r => ({
+    label: map[r.label.toLowerCase()] || r.label,
+    n: r.n,
+    pct: total ? Math.round((r.n / total) * 100) : 0,
+  }));
+  return { total, items };
 }
 
 // Distribución % de una dimensión (edad/género): descarta valores en `drop`, traduce con `map`.

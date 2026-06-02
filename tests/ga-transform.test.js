@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   reportRequests, isSystemPage,
-  normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeDist, normalizeEvolucion,
+  normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeDist, normalizeDemografia, normalizeEvolucion,
   prevPeriod, tendenciaCard, picoCard, destacadoCard, registroFunnel,
 } from '../netlify/functions/ga-transform.js';
 
@@ -62,6 +62,17 @@ test('normalizeBars: dimension+metric -> [{label,value}]', () => {
   assert.deepEqual(normalizeBars(resp), [
     { label: 'Direct', value: 432 }, { label: 'Paid Social', value: 273 },
   ]);
+});
+
+test('normalizeDemografia: total + items con n y % (top N)', () => {
+  const resp = { rows: [
+    { dimensionValues: [{ value: 'Argentina' }], metricValues: [{ value: '72' }] },
+    { dimensionValues: [{ value: 'Paraguay' }], metricValues: [{ value: '18' }] },
+    { dimensionValues: [{ value: 'Chile' }], metricValues: [{ value: '10' }] },
+  ] };
+  const r = normalizeDemografia(resp, { top: 2 });
+  assert.equal(r.total, 100);
+  assert.deepEqual(r.items, [{ label: 'Argentina', n: 72, pct: 72 }, { label: 'Paraguay', n: 18, pct: 18 }]);
 });
 
 test('normalizeDist: descarta unknown, traduce y calcula % sobre lo que queda', () => {
