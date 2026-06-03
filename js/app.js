@@ -92,6 +92,24 @@ function inscriptosEnPeriodo(rows, desde, hasta) {
   return items.filter(i => !i.fecha || (i.fecha >= desde.slice(0, 7) && i.fecha <= hasta));
 }
 
+// gviz devuelve las fechas como "Date(2025,9,24)" (mes 0-based). Pasarlas a YYYY-MM-DD.
+function gvizDateISO(v) {
+  if (v == null) return '';
+  const m = /^Date\((\d+),(\d+),(\d+)/.exec(String(v));
+  if (m) return `${m[1]}-${String(+m[2] + 1).padStart(2, '0')}-${String(+m[3]).padStart(2, '0')}`;
+  return String(v).slice(0, 10);
+}
+
+// Conversión 2 (Registro → Pago) calculada desde la pestaña "Registros y Pagos" para el período.
+function conv2EnPeriodo(rows, desde, hasta) {
+  let reg = 0, pag = 0;
+  for (const r of (rows || [])) {
+    const f = gvizDateISO(r[0]);
+    if (f && f >= desde && f <= hasta) { reg += Number(r[1]) || 0; pag += Number(r[2]) || 0; }
+  }
+  return { reg, pag, pct: reg ? Math.round((pag / reg) * 100) : null };
+}
+
 async function loadEvolucion() {
   try {
     const evo = await fetchEvolucion(new Date().toISOString().slice(0, 10));
@@ -109,13 +127,13 @@ async function loadEvolucion() {
 async function main() {
   status('Cargando…');
   try {
-    const [config, conversion, inscriptos] = await Promise.all(
-      ['Config', 'Conversion', 'Inscriptos'].map(fetchTab)
+    const [config, conversion, inscriptos, regPagos] = await Promise.all(
+      ['Config', 'Conversion', 'Inscriptos', 'Registros y Pagos'].map(fetchTab)
     );
-    renderFields(document, {
-      config: buildConfig(config.rows), conversion: buildConfig(conversion.rows),
-    });
+    const convCfg = buildConfig(conversion.rows);
+    renderFields(document, { config: buildConfig(config.rows), conversion: convCfg });
     window.__inscriptosRows = inscriptos.rows;
+    window.__regPagosRows = regPagos.rows;
 
     loadEvolucion(); // independiente del período; no bloquea
 
@@ -125,6 +143,14 @@ async function main() {
       renderRows(document, 'inscriptos', ins, {
         curso_evento: i => i.curso_evento, inscriptos: i => esNum(i.inscriptos), fecha: i => i.fecha, nota: i => i.nota,
       });
+      // Conversión 2: Pagos ÷ Registros del período (pestaña "Registros y Pagos")
+      const c2 = conv2EnPeriodo(window.__regPagosRows, sel.a.desde, sel.a.hasta);
+      renderFields(document, { conversion: {
+        conv2_valor: c2.pct == null ? '—' : `${c2.pct}%`,
+        conv2_registros: c2.reg ? esNum(c2.reg) : '—',
+        conv2_pagaron: c2.reg ? esNum(c2.pag) : '—',
+        conv2_texto: convCfg.conv2_texto || '',
+      } });
     });
     status('');
   } catch (err) {
