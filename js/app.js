@@ -107,11 +107,37 @@ async function loadRealtime() {
   }
 }
 
+// Profesión: dona (anillo) con el total al centro + leyenda. Colores de marca.
+const PIE_COLORS = ['#ff8048', '#2b5c9b', '#15a06a', '#c4521f', '#7a3c1c', '#9aa1ab'];
+function renderProfesionPie(data) {
+  const wrap = document.getElementById('profesion-pie');
+  if (!wrap) return;
+  const items = (data && data.items) || [];
+  const total = (data && data.total) || 0;
+  if (!items.length || !total) {
+    wrap.innerHTML = '<div style="font-size:12px;color:var(--muted-2)">Sin datos.</div>';
+    return;
+  }
+  let cum = 0;
+  const segs = items.map((it, i) => {
+    const frac = (it.n / total) * 100;
+    const seg = `<circle class="pie-seg" cx="18" cy="18" r="15.915" fill="none" stroke="${PIE_COLORS[i % PIE_COLORS.length]}" stroke-width="5" stroke-dasharray="${frac.toFixed(3)} ${(100 - frac).toFixed(3)}" stroke-dashoffset="${(-cum).toFixed(3)}"></circle>`;
+    cum += frac;
+    return seg;
+  }).join('');
+  const legend = items.map((it, i) =>
+    `<li><i style="background:${PIE_COLORS[i % PIE_COLORS.length]}"></i><span class="dl-label">${it.label}</span><span class="dl-val tnum">${esNum(it.n)} · ${it.pct}%</span></li>`
+  ).join('');
+  wrap.innerHTML =
+    `<div class="pie"><svg viewBox="0 0 36 36" role="img" aria-label="Distribución por profesión"><circle cx="18" cy="18" r="15.915" fill="none" stroke="#f0f2f5" stroke-width="5"></circle>${segs}</svg><div class="pie-center"><b class="tnum">${esNum(total)}</b><span>inscriptos</span></div></div>` +
+    `<ul class="pie-legend">${legend}</ul>`;
+}
+
 // Profesión: snapshot del backend (pestaña "Profesion": Profesión | Cantidad). No depende del período.
 async function loadProfesion() {
   try {
     const t = await fetchTab('Profesion');
-    demoBlock('profesion', profesionDist(t.rows));
+    renderProfesionPie(profesionDist(t.rows));
   } catch (err) {
     console.error('profesión no disponible', err);
   }

@@ -154,6 +154,20 @@ body{
 .fill{display:block;height:100%;border-radius:6px;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
 .bar-row .bv{font-size:12.5px;font-weight:700;text-align:right;color:var(--ink)}
 
+/* dona (Profesión) */
+.pie-wrap{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-top:8px}
+.pie{position:relative;width:158px;height:158px;flex:none}
+.pie svg{width:100%;height:100%;transform:rotate(-90deg)}
+.pie-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.pie-center b{font-size:29px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--ink)}
+.pie-center span{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.pie-legend{list-style:none;display:flex;flex-direction:column;gap:12px;flex:1;min-width:200px}
+.pie-legend li{display:flex;align-items:center;gap:10px;font-size:13px}
+.pie-legend i{width:11px;height:11px;border-radius:3px;flex:none}
+.pie-legend .dl-label{font-weight:600;color:#3a3f46}
+.pie-legend .dl-val{margin-left:auto;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+@media(max-width:480px){.pie-wrap{gap:18px}.pie{width:128px;height:128px}.pie-legend{min-width:140px}}
+
 /* donut / conversion */
 .conv-wrap{display:flex;align-items:center;gap:30px;flex-wrap:wrap}
 .donut{position:relative;width:172px;height:172px;flex:none}
