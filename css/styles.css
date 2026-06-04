@@ -99,6 +99,21 @@ body{
 .rt-cols{display:grid;grid-template-columns:1fr 1fr;gap:30px}
 @media(max-width:760px){.rt-cols{grid-template-columns:1fr;gap:22px}.rt-now{gap:14px}.rt-big{font-size:44px}}
 
+/* "Qué están viendo": título completo (hasta 2 líneas) arriba, barra + número debajo */
+[data-rows="rt-paginas"]{gap:16px}
+[data-rows="rt-paginas"] .bar-row{
+  grid-template-columns:1fr auto;
+  grid-template-areas:"label label" "track value";
+  column-gap:12px;row-gap:8px;align-items:center;
+}
+[data-rows="rt-paginas"] .bar-row .bl{
+  grid-area:label;white-space:normal;text-overflow:clip;
+  font-size:13px;font-weight:600;color:var(--ink);line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+[data-rows="rt-paginas"] .bar-row .track{grid-area:track}
+[data-rows="rt-paginas"] .bar-row .bv{grid-area:value}
+
 /* cards */
 .grid{display:grid;gap:18px}
 .g4{grid-template-columns:repeat(4,1fr)}
@@ -136,7 +151,7 @@ body{
 .bar-row{display:grid;grid-template-columns:120px 1fr 56px;align-items:center;gap:12px}
 .bar-row .bl{font-size:12.5px;font-weight:600;color:#3a3f46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .track{height:11px;background:#f0f2f5;border-radius:6px;overflow:hidden}
-.fill{height:100%;border-radius:6px;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.fill{display:block;height:100%;border-radius:6px;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
 .bar-row .bv{font-size:12.5px;font-weight:700;text-align:right;color:var(--ink)}
 
 /* donut / conversion */
@@ -198,5 +213,58 @@ footer.disc{margin-left:var(--sidebar);padding:22px 34px 40px;color:var(--muted-
 .ctrl.primary select{background:transparent;border:none;font:inherit;font-weight:700;color:#fff;cursor:pointer}
 .ctrl.primary select option{color:#1a1d21}
 
-@media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}}
-@media(max-width:780px){:root{--sidebar:0px}.sidebar{display:none}.main,footer.disc{margin-left:0}}
+/* !important: vence el style="grid-template-columns:1fr 1fr" inline de Conversión y Demográficos */
+@media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr !important}}
+@media(max-width:780px){
+  :root{--sidebar:0px}
+  .sidebar{display:none}
+  .main,footer.disc{margin-left:0}
+  .content{padding:20px 16px 56px}
+  .topbar{padding:12px 16px;gap:12px}
+  .topbar h1{font-size:17px}
+  .topbar .sub{font-size:12px}
+  footer.disc{padding:18px 16px 32px}
+  .sec{margin-bottom:30px}
+  .card{padding:18px}
+  /* tablas anchas: scroll horizontal dentro de la tarjeta en vez de desbordar la pantalla */
+  #s2 .card,#s5 .card,#sI .card{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  #s2 table,#s5 table,#sI table{min-width:520px}
+}
+@media(max-width:560px){
+  .kpi .kval{font-size:32px}
+  .rt-big{font-size:40px}
+  .sec-head h2{font-size:15px}
+  .topbar .ctrl{padding:8px 11px;font-size:12.5px}
+  .ctrl.primary select{max-width:150px}
+}
+
+/* ---------------- IMPRESIÓN / EXPORT "Descargar informe" ---------------- */
+#print-header{display:none}
+
+@media print{
+  @page{size:A4;margin:14mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff}
+
+  /* ocultar cromo: sidebar, topbar, estado, botón y la sección En vivo */
+  .sidebar,.topbar,#app-status,#btn-export,#sRT{display:none !important}
+  .main{margin-left:0 !important}
+  .content{padding:0 !important}
+
+  /* encabezado solo-impresión */
+  #print-header{display:block;margin:0 0 18px;padding-bottom:14px;border-bottom:2px solid var(--orange)}
+  #print-header .ph-brand{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  #print-header .ph-brand b{color:var(--orange)}
+  #print-header .ph-meta{font-size:12.5px;color:var(--muted);margin-top:3px;font-weight:600}
+
+  /* tarjetas para papel: sin sombra, borde finito */
+  .card{box-shadow:none !important;border:1px solid var(--line) !important;break-inside:avoid}
+  .sec{margin-bottom:16px !important}
+  .sec-head{break-inside:avoid;break-after:avoid}
+
+  /* tablas largas: dejar que la tarjeta se parta, pero no las filas; repetir el encabezado */
+  #s2 .card,#s5 .card,#sI .card{break-inside:auto;overflow:visible !important}
+  #s2 table,#s5 table,#sI table{min-width:0 !important}
+  thead{display:table-header-group}
+  tr,.bar-row{break-inside:avoid}
+}

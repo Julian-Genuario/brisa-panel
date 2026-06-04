@@ -58,9 +58,14 @@
       <span id="periodo-vs" hidden>vs</span>
       <select id="periodo-b" aria-label="Período B" hidden></select>
     </div>
+    <button class="ctrl" id="btn-export" title="Descargar el informe en PDF (versión para imprimir)"><span class="ic">⤓</span> Descargar informe</button>
   </div>
 
   <div class="content">
+    <div id="print-header">
+      <div class="ph-brand">Brisa<b>+</b> · Panel Analítico</div>
+      <div class="ph-meta"><span id="ph-periodo"></span> · Generado el <span id="ph-fecha"></span></div>
+    </div>
     <div id="app-status"></div>
 
     <!-- EN VIVO (tiempo real) -->
@@ -302,6 +307,25 @@ const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelec
 const linkFor=id=>links.find(l=>l.getAttribute('href')==='#'+id);
 secs.forEach(s=>{
   new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const l=linkFor(e.target.id);if(l){links.forEach(x=>x.classList.remove('active'));l.classList.add('active');}}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
+});
+// Descargar informe: abre el diálogo de impresión (Guardar como PDF). El encabezado
+// de impresión se rellena con el período activo justo antes de imprimir.
+const btnExport=document.getElementById('btn-export');
+if(btnExport) btnExport.addEventListener('click',()=>window.print());
+window.addEventListener('beforeprint',()=>{
+  // asegurar que todas las barras tengan su ancho aplicado (la animación corre una sola
+  // vez al load; secciones que cargan después podrían quedar en 0 en el PDF)
+  document.querySelectorAll('.fill').forEach(f=>{f.style.width=(f.dataset.w||0)+'%'});
+  const modo=(document.querySelector('.modo-btn.active')?.textContent||'').trim();
+  const selA=document.getElementById('periodo-a'), selB=document.getElementById('periodo-b');
+  const labelA=(selA?.selectedOptions[0]?.textContent||'').trim();
+  let periodo=labelA;
+  if(modo==='Comparar' && selB && !selB.hidden && selB.selectedOptions[0])
+    periodo=labelA+' vs '+selB.selectedOptions[0].textContent.trim();
+  else if(modo) periodo=modo+' · '+labelA;
+  const phP=document.getElementById('ph-periodo'), phF=document.getElementById('ph-fecha');
+  if(phP) phP.textContent=periodo;
+  if(phF) phF.textContent=new Date().toLocaleDateString('es-AR');
 });
 </script>
 </body>
