@@ -6,6 +6,14 @@ export function gvizUrl(sheetId, tabName) {
   return `${base}?${params.toString()}`;
 }
 
+// gviz devuelve fechas como "Date(2025,9,24)" (mes 0-based). Pasar a "YYYY-MM-DD".
+export function gvizDateISO(v) {
+  if (v == null) return '';
+  const m = /^Date\((\d+),(\d+),(\d+)/.exec(String(v));
+  if (m) return `${m[1]}-${String(+m[2] + 1).padStart(2, '0')}-${String(+m[3]).padStart(2, '0')}`;
+  return String(v).slice(0, 10);
+}
+
 export function parseGviz(text) {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');

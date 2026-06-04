@@ -1,5 +1,6 @@
 // js/sections.js — pure mappers from parsed Sheet rows to section data objects
 import { sortByViews } from './format.js';
+import { gvizDateISO } from './sheet.js';
 
 export function getPath(obj, path) {
   return path.split('.').reduce(
@@ -29,6 +30,33 @@ export function buildConfig(rows) {
     }
   }
   return o;
+}
+
+// Profesión (campo "Target" del formulario de inscripción): filas [profesión, cantidad]
+// -> { total, items:[{label, n, pct}] } ordenado por cantidad desc. Mismo shape que demoBlock.
+export function profesionDist(rows) {
+  const items = mapColumns(rows, [
+    { key: 'label', idx: 0, type: 'str' },
+    { key: 'n', idx: 1, type: 'num' },
+  ]).filter(i => i.label);
+  const total = items.reduce((s, i) => s + i.n, 0);
+  return {
+    total,
+    items: items
+      .sort((a, b) => b.n - a.n)
+      .map(i => ({ label: i.label, n: i.n, pct: total ? Math.round((i.n / total) * 100) : 0 })),
+  };
+}
+
+// Conversión 2 como COHORTE: de los registrados en [desde,hasta], cuántos de ESOS pagaron.
+// rows: pestaña "Cohortes" [Fecha, Registrados, Pagaron]. pct siempre ≤ 100% (mismo grupo).
+export function cohorteConv(rows, desde, hasta) {
+  let reg = 0, pag = 0;
+  for (const r of (rows || [])) {
+    const f = gvizDateISO(r[0]);
+    if (f && f >= desde && f <= hasta) { reg += Number(r[1]) || 0; pag += Number(r[2]) || 0; }
+  }
+  return { reg, pag, pct: reg ? Math.round((pag / reg) * 100) : null };
 }
 
 export function buildContenidos(rows) {

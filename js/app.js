@@ -1,8 +1,8 @@
 // js/app.js — GA en vivo por período + fuentes manuales de la Sheet.
 import { gvizUrl, parseGviz } from './sheet.js';
-import { buildConfig, mapColumns } from './sections.js';
+import { buildConfig, mapColumns, profesionDist, cohorteConv } from './sections.js';
 import { renderFields, renderRows, contenidosCells, contenidosCellsSimple, joinContenidos } from './render.js';
-import { fetchPeriodo, fetchEvolucion } from './gaclient.js';
+import { fetchPeriodo, fetchEvolucion, fetchRealtime } from './gaclient.js';
 import { initSelector } from './selector.js';
 
 const SHEET_ID = '1FPsE8AaefOM8Jayz60-YbvhX4q3TrSkHdrA9FfspClY';
@@ -15,7 +15,7 @@ async function fetchTab(tab) {
 }
 const status = msg => { const el = document.getElementById('app-status'); if (el) el.textContent = msg; };
 
-function bars(key, items, suffix = '') {
+function bars(key, items, suffix = '', emptyMsg = 'Sin datos para este período.') {
   items = items || [];
   const body = document.querySelector(`[data-rows="${key}"]`);
   if (!body) return;
@@ -23,7 +23,7 @@ function bars(key, items, suffix = '') {
     [...body.children].forEach(c => { if (c.tagName !== 'TEMPLATE') c.remove(); });
     const p = document.createElement('div');
     p.style.cssText = 'font-size:12px;color:var(--muted-2)';
-    p.textContent = 'Sin datos para este período.';
+    p.textContent = emptyMsg;
     body.appendChild(p);
     return;
   }
@@ -92,22 +92,29 @@ function inscriptosEnPeriodo(rows, desde, hasta) {
   return items.filter(i => !i.fecha || (i.fecha >= desde.slice(0, 7) && i.fecha <= hasta));
 }
 
-// gviz devuelve las fechas como "Date(2025,9,24)" (mes 0-based). Pasarlas a YYYY-MM-DD.
-function gvizDateISO(v) {
-  if (v == null) return '';
-  const m = /^Date\((\d+),(\d+),(\d+)/.exec(String(v));
-  if (m) return `${m[1]}-${String(+m[2] + 1).padStart(2, '0')}-${String(+m[3]).padStart(2, '0')}`;
-  return String(v).slice(0, 10);
+// Tiempo real: activos en los últimos 30 min + qué ven + desde dónde. Se auto-refresca.
+let rtTimer = null;
+async function loadRealtime() {
+  try {
+    const { realtime } = await fetchRealtime();
+    renderFields(document, { realtime: { activos: esNum(realtime.activos) } });
+    bars('rt-paginas', realtime.paginas, '', 'Nadie navegando ahora mismo.');
+    bars('rt-paises', realtime.paises, '', '—');
+    // En los refrescos no hay un nuevo evento 'load', así que aplico los anchos a mano.
+    document.querySelectorAll('#sRT .fill').forEach(f => { f.style.width = (f.dataset.w || 0) + '%'; });
+  } catch (err) {
+    console.error('realtime no disponible', err);
+  }
 }
 
-// Conversión 2 (Registro → Pago) calculada desde la pestaña "Registros y Pagos" para el período.
-function conv2EnPeriodo(rows, desde, hasta) {
-  let reg = 0, pag = 0;
-  for (const r of (rows || [])) {
-    const f = gvizDateISO(r[0]);
-    if (f && f >= desde && f <= hasta) { reg += Number(r[1]) || 0; pag += Number(r[2]) || 0; }
+// Profesión: snapshot del backend (pestaña "Profesion": Profesión | Cantidad). No depende del período.
+async function loadProfesion() {
+  try {
+    const t = await fetchTab('Profesion');
+    demoBlock('profesion', profesionDist(t.rows));
+  } catch (err) {
+    console.error('profesión no disponible', err);
   }
-  return { reg, pag, pct: reg ? Math.round((pag / reg) * 100) : null };
 }
 
 async function loadEvolucion() {
@@ -126,16 +133,20 @@ async function loadEvolucion() {
 
 async function main() {
   status('Cargando…');
+  // Tiempo real: independiente de la Sheet y del selector; arranca ya y se refresca cada 30 s.
+  loadRealtime();
+  if (!rtTimer) rtTimer = setInterval(loadRealtime, 30000);
   try {
-    const [config, conversion, inscriptos, regPagos] = await Promise.all(
-      ['Config', 'Conversion', 'Inscriptos', 'Registros y Pagos'].map(fetchTab)
+    const [config, conversion, inscriptos, cohortes] = await Promise.all(
+      ['Config', 'Conversion', 'Inscriptos', 'Cohortes'].map(fetchTab)
     );
     const convCfg = buildConfig(conversion.rows);
     renderFields(document, { config: buildConfig(config.rows), conversion: convCfg });
     window.__inscriptosRows = inscriptos.rows;
-    window.__regPagosRows = regPagos.rows;
+    window.__cohortesRows = cohortes.rows;
 
     loadEvolucion(); // independiente del período; no bloquea
+    loadProfesion(); // snapshot del backend; no bloquea
 
     initSelector(document, sel => {
       if (sel.a) renderGA(sel);
@@ -143,13 +154,15 @@ async function main() {
       renderRows(document, 'inscriptos', ins, {
         curso_evento: i => i.curso_evento, inscriptos: i => esNum(i.inscriptos), fecha: i => i.fecha, nota: i => i.nota,
       });
-      // Conversión 2: Pagos ÷ Registros del período (pestaña "Registros y Pagos")
-      const c2 = conv2EnPeriodo(window.__regPagosRows, sel.a.desde, sel.a.hasta);
+      // Conversión 2 (cohorte): de los registrados en el período, cuántos de ESOS pagaron.
+      const c2 = cohorteConv(window.__cohortesRows, sel.a.desde, sel.a.hasta);
       renderFields(document, { conversion: {
         conv2_valor: c2.pct == null ? '—' : `${c2.pct}%`,
         conv2_registros: c2.reg ? esNum(c2.reg) : '—',
         conv2_pagaron: c2.reg ? esNum(c2.pag) : '—',
-        conv2_texto: convCfg.conv2_texto || '',
+        conv2_texto: c2.reg
+          ? `De ${esNum(c2.reg)} que se registraron en el período, ${esNum(c2.pag)} ya pagaron (${c2.pct}%). Cohorte por fecha de alta · backend.`
+          : 'Sin registros nuevos en el período.',
       } });
     });
     status('');

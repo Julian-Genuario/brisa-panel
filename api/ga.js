@@ -2,9 +2,9 @@
 // y devuelve JSON normalizado. Misma lógica que la vieja función de Netlify.
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import {
-  reportRequests, evolucionRequest, prevPeriod, picoRequest, regFormRequest,
+  reportRequests, evolucionRequest, prevPeriod, picoRequest, regFormRequest, realtimeRequests,
   normalizeResumen, normalizeBars, normalizeContenidos, normalizeDemografia, normalizeEvolucion,
-  tendenciaCard, picoCard, destacadoCard, registroFunnel,
+  tendenciaCard, picoCard, destacadoCard, registroFunnel, normalizeRealtime,
 } from '../lib/ga-transform.js';
 
 const PROPERTY = `properties/${process.env.GA_PROPERTY_ID}`;
@@ -26,6 +26,17 @@ export default async function handler(req, res) {
     if (q.modo === 'evolucion') {
       const [resp] = await ga.runReport({ property: PROPERTY, ...evolucionRequest('2026-01-01', q.hasta || '2026-12-31') });
       return res.status(200).json({ evolucion: normalizeEvolucion(resp) });
+    }
+
+    if (q.modo === 'realtime') {
+      const rt = realtimeRequests();
+      const [total, paginas, paises] = await Promise.all([
+        ga.runRealtimeReport({ property: PROPERTY, ...rt.total }).then(([r]) => r),
+        ga.runRealtimeReport({ property: PROPERTY, ...rt.paginas }).then(([r]) => r),
+        ga.runRealtimeReport({ property: PROPERTY, ...rt.paises }).then(([r]) => r),
+      ]);
+      res.setHeader('cache-control', 'no-store'); // los datos en vivo cambian cada segundos
+      return res.status(200).json({ realtime: normalizeRealtime({ total, paginas, paises }) });
     }
 
     if (!isDate(q.desde) || !isDate(q.hasta) || q.desde > q.hasta) {

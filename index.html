@@ -20,7 +20,8 @@
 
   <div class="nav-label">Reporte</div>
   <nav class="nav">
-    <a href="#s1" class="active"><span class="dot"></span>Resumen general</a>
+    <a href="#sRT" class="active"><span class="dot"></span>En vivo</a>
+    <a href="#s1"><span class="dot"></span>Resumen general</a>
     <a href="#sA"><span class="dot"></span>Análisis y tendencias</a>
     <a href="#s2"><span class="dot"></span>Evolución</a>
     <a href="#s5"><span class="dot"></span>Contenidos</a>
@@ -44,7 +45,9 @@
       <div class="sub" data-field="config.subtitulo">Reporte semanal · lunes a domingo · se publica el lunes siguiente</div>
     </div>
     <div class="spacer"></div>
-    <div class="live"><span class="pulse"></span> <span data-field="config.actualizado">Actualizado</span></div>
+    <div class="live" id="rt-chip" title="Usuarios activos en los últimos 30 min (GA4 en tiempo real)">
+      <span class="pulse"></span> <b class="tnum" data-field="realtime.activos">—</b> ahora mismo
+    </div>
     <div class="ctrl" id="modo-toggle" role="tablist" aria-label="Modo de período">
       <button class="modo-btn active" data-modo="semana">Semana</button>
       <button class="modo-btn" data-modo="mes">Mes</button>
@@ -59,6 +62,34 @@
 
   <div class="content">
     <div id="app-status"></div>
+
+    <!-- EN VIVO (tiempo real) -->
+    <section class="sec" id="sRT">
+      <div class="sec-head"><span class="sec-num">●</span><h2>En vivo · ahora mismo</h2></div>
+      <div class="card rt-card">
+        <div class="rt-now">
+          <div class="rt-big tnum" data-field="realtime.activos">—</div>
+          <div class="rt-meta">
+            <div class="rt-meta-t"><span class="pulse"></span> Usuarios activos</div>
+            <div class="rt-meta-s">en los últimos 30 minutos · se actualiza solo</div>
+          </div>
+        </div>
+        <div class="rt-cols">
+          <div>
+            <div class="chart-title" style="margin-bottom:12px">Qué están viendo</div>
+            <div class="bars" data-rows="rt-paginas">
+              <template><div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--green),#5fd3a3)"></i></div><span class="bv tnum" data-cell="value"></span></div></template>
+            </div>
+          </div>
+          <div>
+            <div class="chart-title" style="margin-bottom:12px">Desde dónde</div>
+            <div class="bars" data-rows="rt-paises">
+              <template><div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,var(--blue),var(--blue-2))"></i></div><span class="bv tnum" data-cell="value"></span></div></template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- 1. RESUMEN -->
     <section class="sec" id="s1">
@@ -196,7 +227,7 @@
             <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="conversion.conv2_registros">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Registrados</div></div>
             <div><div class="tnum" style="font-size:22px;font-weight:800;color:var(--ink)" data-field="conversion.conv2_pagaron">—</div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Pagaron</div></div>
           </div>
-          <div style="font-size:12.5px;color:var(--muted)" data-field="conversion.conv2_texto">% de registrados que pagan la suscripción. Sale del backend (carga manual en la pestaña “Registros y Pagos”).</div>
+          <div style="font-size:12.5px;color:var(--muted)" data-field="conversion.conv2_texto">De los que se registraron en el período, cuántos de esos ya pagaron. Cohorte por fecha de alta · backend.</div>
         </div>
       </div>
     </section>
@@ -240,6 +271,14 @@
           <div data-total="ciudad" style="margin-top:14px;font-size:12px;font-weight:700;color:var(--muted)"></div>
         </div>
       </div>
+      <div class="card" style="margin-top:18px">
+        <div class="chart-title">Profesión</div>
+        <div class="chart-cap">Según el formulario de inscripción · total acumulado (backend, no varía por período)</div>
+        <div class="bars" data-rows="profesion">
+          <template><div class="bar-row"><span class="bl" data-cell="label"></span><div class="track"><i class="fill" style="background:linear-gradient(90deg,#7a3c1c,var(--orange))"></i></div><span class="bv tnum" data-cell="value"></span></div></template>
+        </div>
+        <div data-total="profesion" style="margin-top:14px;font-size:12px;font-weight:700;color:var(--muted)"></div>
+      </div>
     </section>
 
   </div>
@@ -258,11 +297,11 @@ window.addEventListener('load',()=>{
     });
   },250);
 });
-// active nav on scroll
+// active nav on scroll (mapea sección -> link por su href, sin tabla fija)
 const secs=[...document.querySelectorAll('.sec')], links=[...document.querySelectorAll('.nav a')];
-const map={s1:0,sA:1,s2:2,s5:3,s6:4,sI:5,s7:6};
+const linkFor=id=>links.find(l=>l.getAttribute('href')==='#'+id);
 secs.forEach(s=>{
-  new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=map[e.target.id];links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active');}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
+  new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const l=linkFor(e.target.id);if(l){links.forEach(x=>x.classList.remove('active'));l.classList.add('active');}}})},{rootMargin:'-45% 0px -50% 0px'}).observe(s);
 });
 </script>
 </body>

@@ -12,3 +12,9 @@ export async function fetchEvolucion(hasta) {
   if (!res.ok) throw new Error(`GA evolucion ${res.status}`);
   return res.json(); // { evolucion: [...] }
 }
+
+export async function fetchRealtime() {
+  const res = await fetch(`${BASE}?modo=realtime`);
+  if (!res.ok) throw new Error(`GA realtime ${res.status}`);
+  return res.json(); // { realtime: { activos, paginas:[...], paises:[...] } }
+}

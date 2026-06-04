@@ -118,6 +118,14 @@ function setupPanel() {
       ['Interstaff', 20, 8],
       ['Biotienda', 9, 4],
     ],
+    // Profesión: campo "Target" del formulario de inscripción (export de usuarios).
+    // Total acumulado de TODOS los registros. Actualizar con cada export nuevo.
+    Profesion: [
+      ['Profesión', 'Cantidad'],
+      ['Enfermero', 511],
+      ['Profesional de salud', 76],
+      ['Otro', 968],
+    ],
   };
 
   Object.keys(tabs).forEach(function (name) {
@@ -133,4 +141,25 @@ function setupPanel() {
   });
 
   SpreadsheetApp.getUi().alert('Panel Brisa+: pestañas creadas/actualizadas ✓');
+}
+
+/**
+ * actualizarProfesion() — crea/actualiza SOLO la pestaña "Profesion" sin tocar el resto.
+ * Usar esto (no setupPanel) cuando llega un export nuevo: reemplazá los conteos abajo.
+ */
+function actualizarProfesion() {
+  var data = [
+    ['Profesión', 'Cantidad'],
+    ['Enfermero', 511],
+    ['Profesional de salud', 76],
+    ['Otro', 968],
+  ];
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Profesion') || ss.insertSheet('Profesion');
+  sheet.clear();
+  var rng = sheet.getRange(1, 1, data.length, data[0].length);
+  rng.setNumberFormat('@');
+  rng.setValues(data);
+  sheet.getRange(1, 1, 1, data[0].length).setFontWeight('bold');
+  sheet.setFrozenRows(1);
 }

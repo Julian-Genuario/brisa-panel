@@ -89,6 +89,16 @@ body{
 .tag-ga{background:var(--blue-soft);color:var(--blue)}
 .tag-man{background:var(--orange-soft);color:#c4521f}
 
+/* En vivo (tiempo real) */
+#sRT .sec-num{color:var(--green);background:var(--green-soft)}
+.rt-card{border-left:3px solid var(--green)}
+.rt-now{display:flex;align-items:center;gap:20px;padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.rt-big{font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1;color:var(--green)}
+.rt-meta-t{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+.rt-meta-s{font-size:12.5px;color:var(--muted);margin-top:3px}
+.rt-cols{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+@media(max-width:760px){.rt-cols{grid-template-columns:1fr;gap:22px}.rt-now{gap:14px}.rt-big{font-size:44px}}
+
 /* cards */
 .grid{display:grid;gap:18px}
 .g4{grid-template-columns:repeat(4,1fr)}

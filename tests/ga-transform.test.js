@@ -7,6 +7,7 @@ import {
   reportRequests, isSystemPage,
   normalizeResumen, normalizeContenidos, normalizeBars, normalizeGeografia, normalizeDist, normalizeDemografia, normalizeEvolucion,
   prevPeriod, tendenciaCard, picoCard, destacadoCard, registroFunnel,
+  realtimeRequests, normalizeRealtime,
 } from '../lib/ga-transform.js';
 
 const load = n => JSON.parse(readFileSync(fileURLToPath(new URL(`../fixtures/${n}`, import.meta.url)), 'utf8'));
@@ -140,6 +141,36 @@ test('destacadoCard: contenido más visto (limpia sufijo)', () => {
   assert.equal(c.curiosidad_valor, '395');
   assert.match(c.curiosidad_texto, /Adolescencia/);
   assert.ok(!/BrisaPlus/.test(c.curiosidad_texto));
+});
+
+test('realtimeRequests: total sin dimensión; páginas/países con activeUsers ordenado', () => {
+  const r = realtimeRequests();
+  assert.deepEqual(r.total.metrics, [{ name: 'activeUsers' }]);
+  assert.ok(!r.total.dimensions);
+  assert.equal(r.paginas.dimensions[0].name, 'unifiedScreenName');
+  assert.equal(r.paises.dimensions[0].name, 'country');
+  assert.equal(r.paginas.orderBys[0].metric.metricName, 'activeUsers');
+});
+
+test('normalizeRealtime: total + páginas (limpia sufijo, excluye sistema) + países', () => {
+  const total = { rows: [{ metricValues: [{ value: '12' }] }] };
+  const paginas = { rows: [
+    { dimensionValues: [{ value: 'Ansiedad ¿por dónde empezar? | BrisaPlus' }], metricValues: [{ value: '5' }] },
+    { dimensionValues: [{ value: 'BrisaPlus' }], metricValues: [{ value: '4' }] }, // home/sistema -> fuera
+    { dimensionValues: [{ value: 'Norovirus | BrisaPlus' }], metricValues: [{ value: '3' }] },
+  ] };
+  const paises = { rows: [{ dimensionValues: [{ value: 'Argentina' }], metricValues: [{ value: '8' }] }] };
+  const rt = normalizeRealtime({ total, paginas, paises });
+  assert.equal(rt.activos, 12);
+  assert.deepEqual(rt.paginas, [{ label: 'Ansiedad ¿por dónde empezar?', value: 5 }, { label: 'Norovirus', value: 3 }]);
+  assert.deepEqual(rt.paises, [{ label: 'Argentina', value: 8 }]);
+});
+
+test('normalizeRealtime: respuestas vacías -> 0 activos y listas vacías', () => {
+  const rt = normalizeRealtime({ total: {}, paginas: {}, paises: {} });
+  assert.equal(rt.activos, 0);
+  assert.deepEqual(rt.paginas, []);
+  assert.deepEqual(rt.paises, []);
 });
 
 test('normalizeEvolucion: yearMonth -> filas mensuales con recurrentes', () => {
